@@ -1,19 +1,45 @@
-// Define closure (anonymous function) named 'isEven' that checks if a number is even
-def isEven = { n -> n % 2 == 0 }
+// Function to read input with a prompt and return the entered value
+String readInput(String prompt) {
 
-// Define another closure named 'square' that returns the square of a number
-def square = { x -> x * x }
+    // Print input message
+    print prompt
+    
+    // Try to get the system console
+    def console = System.console()
 
-// Create a list of numbers from 1 to 8
-def numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+    // If console is available, read input from console
+    if (console != null) {
+        return console.readLine()
+    } else {
+        // If console is not available (e.g., running in IDE), use Scanner to read input from System.in
+        Scanner scanner = new Scanner(System.in)
+        return scanner.nextLine()
+    }
 
-// Use the 'findAll' method with the 'isEven' closure to filter even numbers
-def evens = numbers.findAll(isEven)
+}
 
-// Use the 'collect' method with the 'square' closure to square each even number
-def squaredEvens = evens.collect(square)
+// Read map values from keyboard
+def person = [
+    name: readInput("Enter name: "),
+    age : readInput("Enter age: "),
+    city: readInput("Enter city: "),
+    job : readInput("Enter job: ")
+]
 
-// Print results
-println "Original list: $numbers"
-println "Even numbers : $evens"
-println "Squared even numbers: $squaredEvens"
+// Define function that takes a map (like 'person') and returns a string
+String describePerson(Map person) {
+
+    // Use the Elvis operator (?:) to provide a default value if field is missing or null
+    def name = person.name ?: "Unknown"
+    def age = person.age ?: "unspecified age"
+    def city = person.city ?: "an unknown city"
+
+    // If job is present, build a string with job info; otherwise, use an empty string
+    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    
+    // Return full description using string interpolation
+    return "$name is $age years old, lives in $city$jobInfo."
+}
+
+// Call function with the 'person' map as input
+println describePerson(person)

@@ -150,6 +150,58 @@ println describePerson(person)
 
 Try modifying the person map to omit `job` or `age` and rerun to see the default behavior.
 
+The original code defined a fixed person map with hardcoded values for name, age, city, and job. To make the program interactive, we can modified it to read these values from the keyboard at runtime. To do this, we will define a helper function `readInput` that prompts the user for input and captures their response. The `person` map is then populated with these user-provided values instead of static data. This approach allows the program to describe any person based on the information entered by the user, making it more flexible and dynamic.
+
+The `def console = System.console()` attempts to obtain the system console object associated with the running Java Virtual Machine (JVM). The `System.console()` method returns a `Console` instance if the program is running in an interactive command-line environment where input and output are connected to a console (like a terminal). If the program is run in an environment without a console—for example, inside some IDEs, background processes, or when input/output is redirected—this method returns `null`. By assigning this to the variable console, the program can then check if it has access to a console and decide how to read user input accordingly.
+
+```groovy
+// Function to read input with a prompt and return the entered value
+String readInput(String prompt) {
+
+    // Print input message
+    print prompt
+    
+    // Try to get the system console
+    def console = System.console()
+
+    // If console is available, read input from console
+    if (console != null) {
+        return console.readLine()
+    } else {
+        // If console is not available (e.g., running in IDE), use Scanner to read input from System.in
+        Scanner scanner = new Scanner(System.in)
+        return scanner.nextLine()
+    }
+
+}
+
+// Read map values from keyboard
+def person = [
+    name: readInput("Enter name: "),
+    age : readInput("Enter age: "),
+    city: readInput("Enter city: "),
+    job : readInput("Enter job: ")
+]
+
+// Define function that takes a map (like 'person') and returns a string
+String describePerson(Map person) {
+
+    // Use the Elvis operator (?:) to provide a default value if field is missing or null
+    def name = person.name ?: "Unknown"
+    def age = person.age ?: "unspecified age"
+    def city = person.city ?: "an unknown city"
+
+    // If job is present, build a string with job info; otherwise, use an empty string
+    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    
+    // Return full description using string interpolation
+    return "$name is $age years old, lives in $city$jobInfo."
+}
+
+// Call function with the 'person' map as input
+println describePerson(person)
+```
+
 ### 1.3. Closures, collections, connection to `Nextflow`.
 
 Closures are first-class functions in `Groovy`, meaning they can be assigned to variables, passed as arguments, and used like any other object. They are a core feature of `Groovy` and are especially powerful when working with collections.
