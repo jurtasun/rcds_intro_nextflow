@@ -1,4 +1,4 @@
-## RCDS 2025 - Introduction to Nextflow & `nf-core`
+## RCDS 2025 - Introduction to `Nextflow` & `nf-core`
 
 ### Jesús Urtasun Elizari, ICL Research Computing & Data Science
 
