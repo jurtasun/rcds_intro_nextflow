@@ -6,8 +6,8 @@ ICL email address `jurtasun@ic.ac.uk`
 
 LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
-<img src="/readme_figures/imperial_ecri.png">
-<img src="/readme_figures/nextflow-logo.png">
+<img src="/readme_figures/imperial_ecri.png" width = 700>
+<img src="/readme_figures/nextflow-logo.png" width = 700>
 
 ### Find the content of the course in GitHub:
 [https://github.com/jurtasun/rcds_nextflow_intro](https://github.com/jurtasun/rcds_nextflow_intro)

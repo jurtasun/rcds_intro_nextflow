@@ -6,7 +6,8 @@ ICL email address `jurtasun@ic.ac.uk`
 
 LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
-<img src="/readme_figures/imperial_ecri.png" width = 500>
+<img src="/readme_figures/imperial_ecri.png" width = 700>
+<img src="/readme_figures/nextflow-logo.png" width = 700>
 
 ### Chapter 3. `Hello world` with `Nextflow`
 
