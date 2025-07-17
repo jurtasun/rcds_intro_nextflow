@@ -6,10 +6,9 @@ ICL email address `jurtasun@ic.ac.uk`
 
 LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
-<img src="/readme_figures/imperial_ecri.png">
-<img src="/readme_figures/nextflow-logo.png">
+<img src="/readme_figures/imperial_ecri.png" width=500>
 
-### Introduction: Channels.
+### Chapter2. Basic `Nextflow` syntax.
 
 ### 1 Channels: data flow, queue and value channels.
 
@@ -351,48 +350,6 @@ workflow {
 }
 ```
 
-##### 2.1.2 Conditional script
-
-The process script can also be defined in a completely dynamic manner using an if statement or any other expression for evaluating a string value. For example:
-
-```nextflow
-params.compress = 'gzip'
-params.file2compress = "$projectDir/data/ggal/transcriptome.fa"
-
-process FOO {
-    debug true
-
-    input:
-    path file
-
-    script:
-    if (params.compress == 'gzip')
-        """
-        echo "gzip -c $file > ${file}.gz"
-        """
-    else if (params.compress == 'bzip2')
-        """
-        echo "bzip2 -c $file > ${file}.bz2"
-        """
-    else
-        throw new IllegalArgumentException("Unknown compressor $params.compress")
-}
-
-workflow {
-    FOO(params.file2compress)
-}
-```
-Exercise
-Execute this script using the command line to choose bzip2 compression.
-
-Solution
-Summary
-In this step you have learned:
-- How to use the script declaration to define the command to be executed by the process
-- How to use the params variable to define dynamic script parameters
-- How to use the shell declaration to define the command to be executed by the process
-- How to use the if statement to define a conditional script
-
 ##### 2.2 Inputs
 
 Nextflow process instances (tasks) are isolated from each other but can communicate between themselves by sending values through channels.
@@ -400,13 +357,6 @@ Nextflow process instances (tasks) are isolated from each other but can communic
 Inputs implicitly determine the dependencies and the parallel execution of the process. The process execution is fired each time new data is ready to be consumed from the input channel [...figure...]
 
 The input block defines the names and qualifiers of variables that refer to channel elements directed at the process. You can only define one input block at a time, and it must contain one or more input declarations.
-
-The input block follows the syntax shown below:
-
-
-input:
-<input qualifier> <input name>
-There are several input qualifiers that can be used to define the input declaration. The most common are outlined in detail below.
 
 ##### 2.2.1 Input values
 
@@ -645,63 +595,11 @@ As ch2 is now a value channel, it can be consumed multiple times and does not af
 Exercise
 Write a process that is executed for each read file matching the pattern data/ggal/*_1.fq and use the same data/ggal/transcriptome.fa in each execution.
 
-Solution
-
-###### 2.2.4 Input repeaters
-
-The each qualifier allows you to repeat the execution of a process for each item in a collection every time new data is received. For example:
-
-snippet.nf
-
-sequences = Channel.fromPath("$projectDir/data/ggal/*_1.fq")
-methods = ['regular', 'espresso']
-
-process ALIGNSEQUENCES {
-    debug true
-
-    input:
-    path seq
-    each mode
-
-    script:
-    """
-    echo t_coffee -in $seq -mode $mode
-    """
-}
-
-workflow {
-    ALIGNSEQUENCES(sequences, methods)
-}
-Output
-
-t_coffee -in gut_1.fq -mode regular
-t_coffee -in lung_1.fq -mode espresso
-t_coffee -in liver_1.fq -mode regular
-t_coffee -in gut_1.fq -mode espresso
-t_coffee -in lung_1.fq -mode regular
-t_coffee -in liver_1.fq -mode espresso
-In the above example, every time a file of sequences is received as an input by the process, it executes three tasks, each running a different alignment method set as a mode variable. This is useful when you need to repeat the same task for a given set of parameters.
-
-Exercise
-Extend the previous example so a task is executed for an additional type of coffee.
-
-Solution
-Summary
-In this step you have learned:
-
-How to use the val qualifier to define the input channel(s) of a process
-How to use the path qualifier to define the input file(s) of a process
-How to use the each qualifier to repeat the execution of a process for each item in a collection
-
 #### 2.3 Outputs
 
 The output declaration block defines the channels used by the process to send out the results produced.
 
 Only one output block, that can contain one or more output declaration, can be defined. The output block follows the syntax shown below:
-
-
-output:
-<output qualifier> <output name>, emit: <output channel>
 
 ##### 2.3.1 Output values
 
@@ -821,45 +719,6 @@ workflow {
 ```
 
 In the above example, each time the process is executed an alignment file is produced whose name depends on the actual value of the x input.
-
-#### 2.4 When
-
-The when declaration allows you to define a condition that must be verified in order to execute the process. This can be any expression that evaluates a boolean value.
-
-Warning
-Deprecated since version 24.10.0: Use conditional logic (e.g. if statement, filter operator) in the calling workflow instead.
-
-It is useful to enable/disable the process execution depending on the state of various inputs and parameters. For example:
-
-snippet.nf
-
-params.dbtype = 'nr'
-params.prot = 'data/prots/*.tfa'
-proteins = Channel.fromPath(params.prot)
-
-process FIND {
-    debug true
-
-    input:
-    path fasta
-    val type
-
-    when:
-    fasta.name =~ /^BB11.*/ && type == 'nr'
-
-    script:
-    """
-    echo blastp -query $fasta -db nr
-    """
-}
-
-workflow {
-    result = FIND(proteins, params.dbtype)
-}
-Summary
-In this step you have learned:
-
-How to use the when declaration to allow conditional processes
 
 #### 2.5 Directives
 

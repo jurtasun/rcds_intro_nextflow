@@ -6,15 +6,15 @@ ICL email address `jurtasun@ic.ac.uk`
 
 LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
-<img src="/readme_figures/imperial_ecri.png" width="300">
+<img src="/readme_figures/imperial_ecri.png" width="500">
 
-### Introduction to `Groovy`
+### Chapter 1. Introduction to `Groovy`
 
 `Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which in turn is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code.
 
 You have already been using some `Groovy` code in the previous sections, but now it's time to learn more about it.
 
-#### 1.1. Basic `Groovy` syntax.
+### 1.1. Basic `Groovy` syntax.
 
 This first exercise introduces `Groovy`'s basic syntax, which is similar to `Java` but more concise and expressive. We will start by defining variables using `def`, which allows dynamic typing. `Groovy` automatically determines the type based on the assigned value.
 
@@ -81,7 +81,7 @@ for (i in 1..10) {
 }
 ```
 
-#### 1.2. Maps, parameters, data processing.
+### 1.2. Maps, parameters, data processing.
 
 This exercise explores one of `Groovy`'s most powerful and commonly used structures: maps. A map is a collection of key-value pairs, and `Groovy` provides very concise syntax for creating and accessing them. Maps are heavily used in `Nextflow` configurations, parameter passing, and data modelling.
 
@@ -149,7 +149,7 @@ println describePerson(person)
 
 Try modifying the person map to omit `job` or `age` and rerun to see the default behavior.
 
-#### 1.3. Closures, collections, connection to `Nextflow`.
+### 1.3. Closures, collections, connection to `Nextflow`.
 
 Closures are first-class functions in `Groovy`, meaning they can be assigned to variables, passed as arguments, and used like any other object. They are a core feature of `Groovy` and are especially powerful when working with collections.
 
