@@ -1,4 +1,4 @@
-## RCDS 2025 - Introduction to Nextflow & nf-core
+## RCDS 2025 - Introduction to Nextflow & `nf-core`
 
 ### Jesús Urtasun Elizari, ICL Research Computing & Data Science
 
@@ -12,11 +12,11 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 ### Find the content of the course in GitHub:
 [https://github.com/jurtasun/rcds_nextflow_intro](https://github.com/jurtasun/rcds_nextflow_intro)
 
-This course provides an introduction to Nextflow and nf-core automated pipelines.
+This course provides an introduction to `Nextflow` and `nf-core` automated pipelines.
 Even though it is commonly used in biological and clinical sciences, such as genomics and bioinformatics, 
-Nextflow is a multi-purpose, versatile and powerful scripting language that can be applied to many different fields and tasks.
-The topics covered will include basic concepts on bash scripting and linux OS, basics of groovy, containers and environments.
-Then we will show how Nextflow can be used to build automatized and reproducible workflows for data analysis.
+`Nextflow` is a multi-purpose, versatile and powerful scripting language that can be applied to many different fields and tasks.
+The topics covered will include basic concepts on bash scripting and linux OS, basics of `Groovy`, containers and environments.
+Then we will show how `Nextflow` can be used to build automatized and reproducible workflows for data analysis.
 
 The course is organized in six chapters, covering the topics listed below. All will be followed by a practical session and hands-on coding.
 No prior experience on programming, statistics or data analysis is required for the attendance of this course, 
@@ -24,23 +24,23 @@ as all topics will be properly introduce as the course progresses.
 
 ## Roadmap of the course
 
-### Chapter 1. Introduction to Groovy.
+### Chapter 1. Introduction to `Groovy`.
 
-- Introduction to Groovy basic syntax and applications.
+- Introduction to `Groovy` basic syntax and applications.
 - Maps, parameters, data processing.
-- Closures, collections, connection to Nextflow.
+- Closures, collections, connection to `Nextflow`.
 
-### Chapter 2. Basic Nextflow syntax.
+### Chapter 2. Basic `Nextflow` syntax.
 
 - Channels: data flow, queue and value channels.
 - Processes: executing functions.
 - Operators: produce, chain and manipulate channels.
 
-### Chapter 3. Hello world with Nextflow.
+### Chapter 3. Hello world with `Nextflow`.
 
-- Hello world with nexftlow.
+- Hello world with Nexftlow.
 - Processes and workflow.
-- General structure of a Nextflow pipeline.
+- General structure of a `Nextflow` pipeline.
 
 ### Chapter 4. Channels and operators.
 
@@ -58,9 +58,9 @@ as all topics will be properly introduce as the course progresses.
 
 - Modularize the process on the workflow.
 - The idea of containers: docker and singularity.
-- Container 'manually', containers in Nextflow.
+- Container 'manually', containers in `Nextflow`.
 
-### Chapter 7. Nextflow config and `nf-core`.
+### Chapter 7. `Nextflow` config and `nf-core`.
 
 - The `hello-config` directory.
 - Symbolic links, containers, submission script.
@@ -68,10 +68,10 @@ as all topics will be properly introduce as the course progresses.
 
 ### Setup
 
-We will be working with the terminal of Linux OS, Visual Studio Code as main editor, and Groovy / Nextflow languages.
+We will be working with the terminal of Linux OS, Visual Studio Code as main editor, and `Groovy` / `Nextflow` languages.
 They do not need to be installed in your local computer, since we will use `Codespaces` provided by Github, 
 which already implement an interface ready to program an execute the code. If you want to follow the course in your local machine,
-please follow the steps below to install Groovy, Java Development Kit (JDK), and Nextflow.
+please follow the steps below to install `Groovy`, Java Development Kit (JDK), and `Nextflow`.
 
 ### Getting Started
 
@@ -81,7 +81,7 @@ please follow the steps below to install Groovy, Java Development Kit (JDK), and
 
 3. Open a `Codespace` where we will be using either Visual Studio Code fro the practical sessions.
 
-### Install and run Nextflow locally in your machine
+### Install and run `Nextflow` locally in your machine
 
 1. Install homebrew
 Go to the homebrew site [https://brew.sh](https://brew.sh) and run the following command.
@@ -95,13 +95,13 @@ Check the latest jdk relase [https://formulae.brew.sh/formula/openjdk#default](h
 brew install openjdk@21
 ```
 
-3. Install nextflow
+3. Install `Nextflow`
 Visit the nextdlow site [https://www.nextflow.io](https://www.nextflow.io) and follow the steps for installation.
 Run the following command to check java version.
 ```bash
 java -version
 ```
-Run the following command to download nextflow.
+Run the following command to download `Nextflow`.
 ```bash
 curl -s https://get.nextflow.io | bash
 ```
@@ -121,12 +121,12 @@ Run the same thing connecting to the `hello` repository of `nextflow`.
 ```bash
 nextflow run hello
 ```
-Congrats! You have nextflow succesfully installed in your computer.
+Congrats! You have `Nextflow` succesfully installed in your computer.
 
 4. Install docker (outside of HPC)
 Visit the docker website [https://www.docker.com](https://www.docker.com) and follow the installation instrunctions.
 Move docker.dmg file to Applicatinos folder.
-Check successfull installation of docker, and run nextflow adding the `-with-docker` argument.
+Check successfull installation of docker, and run `Nextflow` adding the `-with-docker` argument.
 ```bash
 nextflow run hello -with-docker
 ```

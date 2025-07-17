@@ -1,0 +1,23 @@
+{
+  "name": "Nextflow Codespace",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "postCreateCommand": "nextflow -version",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "github.copilot",
+        "github.copilot-chat",
+        "nvuillam.vscode-groovy-lint",
+        "nextflow.nextflow"
+      ]
+    }
+  }
+}
