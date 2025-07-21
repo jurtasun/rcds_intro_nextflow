@@ -10,15 +10,16 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 <img src="/readme_figures/nextflow-logo.png" width = 700>
 
 ### Find the content of the course in GitHub:
-[https://github.com/jurtasun/rcds_nextflow_intro](https://github.com/jurtasun/rcds_nextflow_intro)
+[https://github.com/jurtasun/rcds_intro_nextflow](https://github.com/jurtasun/rcds_intro_nextflow)
 
 This course provides an introduction to `Nextflow` and `nf-core` automated pipelines.
 Even though it is commonly used in biological and clinical sciences, such as genomics and bioinformatics, 
 `Nextflow` is a multi-purpose, versatile and powerful scripting language that can be applied to many different fields and tasks.
-The topics covered will include basic concepts on bash scripting and linux OS, basics of `Groovy`, containers and environments.
-Then we will show how `Nextflow` can be used to build automatized and reproducible workflows for data analysis.
+The topics covered will include basic concepts on `bash` scripting and Linux OS, introduction `Groovy` as the language upon which `Nextflow` is written,
+and an overview on container technologies. All these will be covered at introductory level; 
+then we will show how `Nextflow` can be used to build automatized and reproducible workflows for data analysis.
 
-The course is organized in six chapters, covering the topics listed below. All will be followed by a practical session and hands-on coding.
+The course is organized in seven chapters, covering the topics listed below. All will be followed by a practical session and hands-on coding.
 No prior experience on programming, statistics or data analysis is required for the attendance of this course, 
 as all topics will be properly introduce as the course progresses.
 
@@ -38,9 +39,9 @@ as all topics will be properly introduce as the course progresses.
 
 ### Chapter 3. Hello world with `Nextflow`.
 
-- Hello world with Nexftlow.
-- Processes and workflow.
-- General structure of a `Nextflow` pipeline.
+- Channels, processes, operators in a real case.
+- General structure and workflow of a `Nextflow` pipeline.
+- Hello world with `Nexftlow`.
 
 ### Chapter 4. Channels and operators.
 
@@ -56,14 +57,14 @@ as all topics will be properly introduce as the course progresses.
 
 ### Chapter 6. Containers and modularization.
 
-- Modularize the process on the workflow.
-- The idea of containers: docker and singularity.
-- Container 'manually', containers in `Nextflow`.
+- Modularize a `Nextflow` pipeline.
+- The idea of containers: Docker and Singularity.
+- Containers 'manually', containers in `Nextflow`.
 
 ### Chapter 7. `Nextflow` config and `nf-core`.
 
 - The `hello-config` directory.
-- Symbolic links, containers, submission script.
+- Symbolic links, containers, submission script through `Nextflow` config.
 - Load pipelines from `nf-core`, run on HPC and parallelization.
 
 ### Setup
@@ -71,7 +72,7 @@ as all topics will be properly introduce as the course progresses.
 We will be working with the terminal of Linux OS, Visual Studio Code as main editor, and `Groovy` / `Nextflow` languages.
 They do not need to be installed in your local computer, since we will use `Codespaces` provided by Github, 
 which already implement an interface ready to program an execute the code. If you want to follow the course in your local machine,
-please follow the steps below to install `Groovy`, Java Development Kit (JDK), and `Nextflow`.
+please follow the steps below to install `Groovy`, `Java Development Kit` (JDK), and `Nextflow`.
 
 ### Getting Started
 
@@ -83,56 +84,70 @@ please follow the steps below to install `Groovy`, Java Development Kit (JDK), a
 
 ### Install and run `Nextflow` locally in your machine
 
-1. Install homebrew
-Go to the homebrew site [https://brew.sh](https://brew.sh) and run the following command.
+1. Install `homebrew`
+
+Go to the `homebrew` site [https://brew.sh](https://brew.sh) and run the following command.
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-2. Install java development kit (open source implementation of java)
-Check the latest jdk relase [https://formulae.brew.sh/formula/openjdk#default](https://formulae.brew.sh/formula/openjdk#default) and run the following command.
+2. Install `Java Development Kit` (open source implementation of `Java`)
+
+Check the latest JDK relase [https://formulae.brew.sh/formula/openjdk#default](https://formulae.brew.sh/formula/openjdk#default) and run the following command.
 ```bash
 brew install openjdk@21
 ```
 
 3. Install `Nextflow`
+
 Visit the nextdlow site [https://www.nextflow.io](https://www.nextflow.io) and follow the steps for installation.
+
 Run the following command to check java version.
 ```bash
 java -version
 ```
+
 Run the following command to download `Nextflow`.
 ```bash
 curl -s https://get.nextflow.io | bash
 ```
+
 Check the path variable on your computer.
 ```bash
 echo $PATH
 ```
+
 Here is where all sotfwares installed with homebrew are stored. Move the downloaded `nextflow` executable file there.
 ```bash
 sudo mv nextflow /opt/homebrew/bin/
 ```
+
 Move to the previous address and run the executable file there.
 ```bash
 cd /opt/homebrew/bin/ && ./nextflow run hello
 ```
+
 Run the same thing connecting to the `hello` repository of `nextflow`.
 ```bash
 nextflow run hello
 ```
+
 Congrats! You have `Nextflow` succesfully installed in your computer.
 
 4. Install docker (outside of HPC)
-Visit the docker website [https://www.docker.com](https://www.docker.com) and follow the installation instrunctions.
-Move docker.dmg file to Applicatinos folder.
+
+Visit the Docker website [https://www.docker.com](https://www.docker.com) and follow the installation instrunctions.
+
+Move `docker.dmg` file to Applications folder.
+
 Check successfull installation of docker, and run `Nextflow` adding the `-with-docker` argument.
 ```bash
 nextflow run hello -with-docker
 ```
 
 5. Install singularity (for HPC)
-Visit the singularity website [https://docs.sylabs.io/guides/3.5/admin-guide/installation.html](https://docs.sylabs.io/guides/3.5/admin-guide/installation.html) and follow the installation instructions.
+Visit the Singularity website [https://docs.sylabs.io/guides/3.5/admin-guide/installation.html](https://docs.sylabs.io/guides/3.5/admin-guide/installation.html) and follow the installation instructions.
+
 Check successfull installation of singulariy.
 ```bash
 nextflow run hello -with-docker
