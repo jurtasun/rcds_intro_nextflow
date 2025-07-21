@@ -11,9 +11,9 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
 ### Chapter 1. Introduction to `Groovy`
 
-`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which in turn is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code.
+`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which in turn is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code. It was created to make it easier to write and manage complex workflows, especially in fields like bioinformatics and data science.
 
-You have already been using some `Groovy` code in the previous sections, but now it's time to learn more about it.
+As we will see, `Nextflow` uses `Groovy` syntax under the hood. Before running any `Nextflow` syntax, let's dig a little deeper into `Groovy` itself, as understanding how it works will help us write more powerful and flexible workflows in `Nextflow`.
 
 ### 1.1. Basic `Groovy` syntax.
 
@@ -21,7 +21,7 @@ This first exercise introduces `Groovy`'s basic syntax, which is similar to `Jav
 
 Next, we will use string interpolation with double-quoted strings, allowing variables to be embedded directly in strings using the `$variableName` syntax. This is a cleaner way to build strings than concatenation.
 
-Then, we will introduces loops using a range (1..10) and a `for` loop to iterate through it.
+Then, we will use loops using a range (1..10) iterate through a set of values and printing each time a different message.
 
 Write a `Groovy` script that:
 - Declares a variable name with your name.
@@ -44,7 +44,7 @@ for (i in 1..5) {
 }
 ```
 
-We can modify this a little. Inside the loop, conditional statements (`if`, `else`) can be used to apply logic to each value-filtering even numbers and printing a special message for numbers divisible by 4. These are foundational tools for controlling flow in any `Groovy` (or `Nextflow`) script.
+We can modify this a little. Inside the loop, conditional statements (`if`, `else`) can be used to apply logic to each value, filtering even numbers and printing a specific message for some values. For instance, numbers divisible by 4. These are foundational tools for controlling flow in any `Groovy` (or `Nextflow`) script.
 
 Edit the script to do the following:
 - Declares a variable name and age.
@@ -84,7 +84,7 @@ for (i in 1..10) {
 
 ### 1.2. Maps, parameters, data processing.
 
-This exercise explores one of `Groovy`'s most powerful and commonly used structures: maps. A map is a collection of key-value pairs, and `Groovy` provides very concise syntax for creating and accessing them. Maps are heavily used in `Nextflow` configurations, parameter passing, and data modelling.
+This exercise explores one of `Groovy`'s most powerful and commonly used structures: maps. A map is a collection of key-value pairs, and `Groovy` provides very concise syntax for creating and accessing them. Maps are heavily used in `Nextflow` configurations, parameter passing, and data modelling. Indeed, if you have some prior coding experience, you shall find that maps are similar to dictionaries in modern languages such as `Python`.
 
 Let's write a function (or *method*) that takes a map as input and constructs a description string. This function demonstrates `Groovy`'s support for dynamic typing and named parameters via maps.
 
@@ -111,6 +111,7 @@ println describePerson(person)
 ```
 
 We could also use the `Elvis` operator (`?:`) to supply default values if certain keys are missing from the map, which is a common and elegant way to handle optional inputs.
+The `Elvis` operator is a shorthand in `Groovy` - and other languages - used to provide a default value if something is `null` or `false`.
 
 Finally, we could practice conditional string construction: for example, only appending the job description if it exists. This shows how you can write expressive logic in compact, readable code using `Groovy`'s flexible syntax.
 
@@ -258,4 +259,36 @@ def squaredEvens = evens.collect(square)
 println "Original list: $numbers"
 println "Even numbers : $evens"
 println "Squared even numbers: $squaredEvens"
+```
+
+Edit this file further to read the input numbers from a file `data/numbers.txt`.
+
+```groovy
+// Define closure (anonymous function) named 'isEven' that checks if a number is even
+def isEven = { n -> n % 2 == 0 }
+
+// Define another closure named 'square' that returns the square of a number
+def square = { x -> x * x }
+
+// Read numbers from a file called "numbers.txt" (one number per line)
+def numbers = []
+new File("data/numbers.txt").eachLine { line ->
+    // Convert each line to integer and add to the list
+    numbers << line.toInteger()
+}
+
+// Use the 'findAll' method with the 'isEven' closure to filter even numbers
+def evens = numbers.findAll(isEven)
+
+// Use the 'collect' method with the 'square' closure to square each even number
+def squaredEvens = evens.collect(square)
+
+// Prepare the output text
+def output = """Original list: $numbers
+Even numbers : $evens
+Squared even numbers: $squaredEvens
+"""
+
+// Write output to 'results.txt'
+new File("results.txt").write(output)
 ```
