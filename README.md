@@ -1,4 +1,4 @@
-## RCDS 2025 - Introduction to `Nextflow` for reproducible scientific workflow
+## RCDS 2025 - Introduction to `Nextflow` for reproducible scientific workflows
 
 ### Jesús Urtasun Elizari, ICL Research Computing & Data Science
 
@@ -15,8 +15,9 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 This course provides an introduction to `Nextflow` and `nf-core` automated pipelines for reproducible scientific workflows.
 Even though it is commonly used in biological and clinical sciences, such as genomics and bioinformatics, 
 `Nextflow` is a multi-purpose, versatile and powerful scripting language that can be applied to many different fields and tasks.
+
 The topics covered will include basic concepts on `bash` scripting and Linux OS, introduction `Groovy` as the language upon which `Nextflow` is written,
-and an overview on container technologies. All these will be covered at introductory level; 
+and an overview on container technologies and modularization. All these will be covered at introductory level; 
 then we will show how `Nextflow` can be used to build automatized and workflows for robust and reproducible data analysis.
 
 The course is organized in seven chapters, covering the topics listed below. All will be followed by a practical session and hands-on coding.
@@ -70,7 +71,7 @@ as all topics will be properly introduce as the course progresses.
 ### Setup
 
 We will be working with the terminal of Linux OS, Visual Studio Code as main editor, and `Groovy` / `Nextflow` languages.
-They do not need to be installed in your local computer, since we will use `Codespaces` provided by Github, 
+They do not need to be installed in your local computer, since we will use the `Codespaces` provided by Github, 
 which already implement an interface ready to program an execute the code. If you want to follow the course in your local machine,
 please follow the steps below to install `Groovy`, `Java Development Kit` (JDK), and `Nextflow`.
 
