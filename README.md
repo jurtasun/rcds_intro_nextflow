@@ -1,4 +1,4 @@
-## RCDS 2025 - Introduction to `Nextflow` & `nf-core`
+## RCDS 2025 - Introduction to `Nextflow` for reproducible scientific workflow
 
 ### Jesús Urtasun Elizari, ICL Research Computing & Data Science
 
@@ -12,12 +12,12 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 ### Find the content of the course in GitHub:
 [https://github.com/jurtasun/rcds_intro_nextflow](https://github.com/jurtasun/rcds_intro_nextflow)
 
-This course provides an introduction to `Nextflow` and `nf-core` automated pipelines.
+This course provides an introduction to `Nextflow` and `nf-core` automated pipelines for reproducible scientific workflows.
 Even though it is commonly used in biological and clinical sciences, such as genomics and bioinformatics, 
 `Nextflow` is a multi-purpose, versatile and powerful scripting language that can be applied to many different fields and tasks.
 The topics covered will include basic concepts on `bash` scripting and Linux OS, introduction `Groovy` as the language upon which `Nextflow` is written,
 and an overview on container technologies. All these will be covered at introductory level; 
-then we will show how `Nextflow` can be used to build automatized and reproducible workflows for data analysis.
+then we will show how `Nextflow` can be used to build automatized and workflows for robust and reproducible data analysis.
 
 The course is organized in seven chapters, covering the topics listed below. All will be followed by a practical session and hands-on coding.
 No prior experience on programming, statistics or data analysis is required for the attendance of this course, 
