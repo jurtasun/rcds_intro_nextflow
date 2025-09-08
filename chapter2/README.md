@@ -9,11 +9,19 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 <img src="/readme_figures/imperial_ecri.png" width = 700>
 <img src="/readme_figures/nextflow-logo.png" width = 700>
 
-### Chapter2. Basic `Nextflow` syntax.
+### Chapter 2. Basic `Nextflow` syntax.
+
+At the heart of Nextflow, three concepts work together to define and execute workflows: `channels`, `processes`, and `operators`.
+
+A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible.
+
+A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: inputs (declared through channel bindings), outputs (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work. `Processes` are reactive: they only execute when all their declared input channels have values available. This ensures precise dependency management without requiring explicit scheduling logic.
+
+`Operators` are functions that transform `channels`. They allow to filter, map, group, or merge data streams before passing them to processes. For example, `.map { ... }` can transform each value in a channel, `.filter { ... }` can remove unwanted elements, and `.combine(...)` can join two channels together. `Operators` provide the expressive power to model complex data dependencies with concise, declarative syntax.
 
 ### 1 Channels: data flow, queue and value channels.
 
-Channels are a key data structure of `Nextflow` that allows the implementation of reactive-functional oriented computational workflows based on the Dataflow programming paradigm. They are used to logically connect tasks to each other or to implement functional style data transformations. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
+A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
 
 #### 1.1 Channel types.
 
@@ -24,20 +32,21 @@ A **queue** channel is an *asynchronous* unidirectional FIFO queue that connects
 - FIFO means that the data is guaranteed to be delivered in the same order as it is produced. First In, First Out.
 A queue channel is implicitly created by process output definitions or using channel factories such as `Channel.of()` or `Channel.fromPath()`.
 
-Try the following code:
+Create a `nextflow` file named `channels.nf` and pase the following code:
 ```nextflow
+// Create a queue channel with multiple values
 ch = Channel.of(1, 2, 3)
 ch.view()
 ```
 
-A **value** channel (a.k.a. a *singleton* channel) is bound to a single value and it can be read unlimited times without consuming its contents. A `value` channel is created using the `value` channel factory or by operators returning a single value, such as `first`, `last`, `collect`, `count`, `min`, `max`, `reduce`, and `sum`.
-
-To see the difference between value and queue channels, you can try the following:
+Edit it to create two channels, `ch1` and `ch2`, and then uses them as inputs to the `SUM` process. The `SUM` process sums the two inputs and prints the result to the standard output. 
 
 ```nextflow
+// Create a queue channel with multiple values
 ch1 = Channel.of(1, 2, 3)
 ch2 = Channel.of(1)
 
+// Define process computing sum
 process SUM {
     input:
     val x
@@ -52,23 +61,23 @@ process SUM {
     """
 }
 
+// Define workflow
 workflow {
     SUM(ch1, ch2).view()
 }
 ```
 
-This workflow creates two channels, `ch1` and `ch2`, and then uses them as inputs to the SUM process. The SUM process sums the two inputs and prints the result to the standard output.
+When you run this script, it only prints `2`. A process will only instantiate a task when there are elements to be consumed from all the channels provided as input to it. Because `ch1` and `ch2` are queue channels, and the single element of `ch2` has been consumed, no new process instances will be launched, even if there are other elements to be consumed in `ch1`.
 
-When you run this script, it only prints `2`.
-
-A process will only instantiate a task when there are elements to be consumed from all the channels provided as input to it. Because `ch1` and `ch2` are queue channels, and the single element of `ch2` has been consumed, no new process instances will be launched, even if there are other elements to be consumed in `ch1`.
-
-To use the single element in `ch2` multiple times, you can either use the `Channel.value` channel factory, or use a channel operator that returns a single element, such as `first()`:
+A **value** channel (a.k.a. a *singleton* channel) is bound to a single value and it can be read unlimited times without consuming its contents. It is created using the `Channel.value()` channel factory or by operators returning a single value, such as `first`, `last`, `collect`, `count`, `min`, `max`, `reduce`, and `sum`. 
+To see the difference between value and queue channels, edit the `channels.nf` file to contain the following: 
 
 ```nextflow
+// Create queue and value channels
 ch1 = Channel.of(1, 2, 3)
 ch2 = Channel.value(1)
 
+// Define process
 process SUM {
     input:
     val x
@@ -83,18 +92,21 @@ process SUM {
     """
 }
 
+// Define workflow
 workflow {
     SUM(ch1, ch2).view()
 }
 ```
-In many situations, `Nextflow` will implicitly convert variables to value channels when they are used in a process invocation.
 
-For example, when you invoke a process with a workflow parameter (`params.ch2`) which has a string value, it is automatically cast into a value channel:
+To use the single element in `ch2` multiple times, you can either use the `Channel.value` channel factory, 
+or use a channel operator that returns a single element, such as `first()`:
 
 ```nextflow
+// Create queue and value channels
 ch1 = Channel.of(1, 2, 3)
-params.ch2 = "1"
+ch2 = ch1.first()
 
+// Define process
 process SUM {
     input:
     val x
@@ -109,6 +121,36 @@ process SUM {
     """
 }
 
+// Define workflow
+workflow {
+    SUM(ch1, ch2).view()
+}
+```
+
+In many situations, `Nextflow` will implicitly convert variables to value channels when they are used in a process invocation. 
+For example, when you invoke a process with a workflow parameter (`params.ch2`) which has a string value, it is automatically cast into a value channel:
+
+```nextflow
+// Declare channel and parameter
+ch1 = Channel.of(1, 2, 3)
+params.ch2 = "1"
+
+// Define process
+process SUM {
+    input:
+    val x
+    val y
+
+    output:
+    stdout
+
+    script:
+    """
+    echo \$(($x+$y))
+    """
+}
+
+// Define workflow
 workflow {
     SUM(ch1, params.ch2).view()
 }
@@ -116,84 +158,14 @@ workflow {
 
 #### 1.2. Channel factories.
 
-Channel factories are `Nextflow` commands for creating channels that have implicit expected inputs and functions. There are several different Channel factories which are useful for different situations. The following sections will cover the most common channel factories. 
+Channel factories are `Nextflow` commands for creating channels that have implicit expected inputs and functions. There are several different Channel factories which are useful for different situations. The following sections will cover the most common channel factories. Besides the basic `of()` and `value()` factories for queue and value channeles, there are also the `fromList()` and `fromPath()`, among others.
 
-Tip: Since version 20.07.0, `channel` was introduced as an alias of `Channel`, allowing factory methods to be specified as `channel.of()` or `Channel.of()`, and so on.
-
-##### 1.2.1 `value()`
-
-The `value` channel factory is used to create a *value* channel. An optional not `null` argument can be specified to bind the channel to a specific value. For example:
-
-```nextflow
-ch1 = Channel.value() 
-ch2 = Channel.value('Hello there') 
-ch3 = Channel.value([1, 2, 3, 4, 5])
-```
-
-##### 1.2.1 `of()`
-
-The `Channel.of` factory allows the creation of a *queue* channel with the values specified as arguments.
-
-```nextflow
-Channel
-    .of(1, 3, 5, 7)
-    .view()
-```
-
-The `Channel.of` channel factory works in a similar manner to `Channel.from` (which is now deprecated), fixing some inconsistent behaviors of the latter and providing better handling when specifying a range of values. For example, the following works with a range from 1 to 23:
-
-```nextflow
-Channel
-    .of(1..23, 'X', 'Y')
-    .view()
-```
-
-##### 1.2.3 `fromList()`
-
-The `Channel.fromList` factory creates a channel emitting the elements provided by a list object specified as an argument:
-
-```nextflow
-list = ['hello', 'world']
-
-Channel
-    .fromList(list)
-    .view()
-```
-
-##### 1.2.4 `fromPath()`
-
-The `Channel.fromPath` factory creates a queue channel emitting one or more files matching the specified glob pattern.
-
-```nextflow
-Channel
-    .fromPath('./data/meta/*.csv')
-```
-
-This example creates a channel and emits as many items as there are files with a `csv` extension in the `./data/meta` folder. 
-Each element is a file object implementing the Path interface.
-
-##### 1.2.5 `fromFilePairs()`
-
-The `Channeld.fromFilePairs` factory creates a channel emitting the file pairs matching a glob pattern provided by the user. The matching files are emitted as tuples, in which the first element is the grouping key of the matching pair and the second element is the list of files (sorted in lexicographical order).
-
-```nextflow
-Channel
-    .fromFilePairs('./data/ggal/*_{1,2}.fq')
-    .view()
-```
-
-The glob pattern must contain at least an asterisk wildcard character `(*)`. It will produce an output similar to the following:
-
-```bash
-[liver, [/workspaces/training/nf-training/data/ggal/liver_1.fq, /workspaces/training/nf-training/data/ggal/liver_2.fq]]
-[gut, [/workspaces/training/nf-training/data/ggal/gut_1.fq, /workspaces/training/nf-training/data/ggal/gut_2.fq]]
-[lung, [/workspaces/training/nf-training/data/ggal/lung_1.fq, /workspaces/training/nf-training/data/ggal/lung_2.fq]]
-```
+We will see how they are used practice during the next chapters. For now, keep in mind that a `channel` is a data stream that connects different parts of a workflow, and that can be found mainly in these two species, *queue* and *value*. A note on syntax: Since version 20.07.0, `channel` was introduced as an alias of `Channel`, allowing factory methods to be specified as `channel.of()` or `Channel.of()`, and so on.
 
 #### 2. Processes: executing functions.
 
-In `Nextflow`, a `process` is the basic computing tool used to execute functions, custom scripts or external tools.
-The `process` definition starts with the keyword `process`, followed by the process name and then the process body delimited by curly brackets.
+In `Nextflow`, a `process` is the basic computing tool used to execute functions, custom scripts or external tools. 
+The `process` definition starts with the keyword `process`, followed by the process name and then the process body delimited by curly brackets. 
 A basic process, only using the script definition block, looks like the following:
 
 ```nextflow
