@@ -88,7 +88,7 @@ This exercise explores one of `Groovy`'s most powerful and commonly used structu
 
 Let's write a function (or *method*) that takes a map as input and constructs some descriptive string. This function demonstrates `Groovy`'s support for dynamic typing and named parameters via maps.
 
-Write a `Groovy` script named `maps.goovy` that:
+Write a `Groovy` script named `maps.groovy` that:
 - Creates a `map` person with keys: `name`, `age`, and `city`.
 - Write a function `describePerson()` that takes the `map` as input returns a string like: "Alice is 30 years old and lives in London."
 - Call the function and print the result.
