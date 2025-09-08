@@ -11,16 +11,13 @@ String describePerson(Map person) {
 
     // Use the Elvis operator (?:) to provide a default value if field is missing or null
     def name = person.name ?: "Unknown"
-    def age = person.age ?: "unspecified age"
-    def city = person.city ?: "an unknown city"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
-    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    def jobInfo = person.job ? " and works as in ${person.job}" : ""
     
     // Return full description using string interpolation
     return "$name is $age years old, lives in $city$jobInfo."
 
 }
-
-// Call function with the 'person' map as input
-println describePerson(person)

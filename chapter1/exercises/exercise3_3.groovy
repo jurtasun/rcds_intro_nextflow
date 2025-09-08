@@ -1,4 +1,4 @@
-// Define closure (anonymous function) named 'isEven' that checks if a number is even
+ // Define closure (anonymous function) named 'isEven' that checks if a number is even
 def isEven = { n -> n % 2 == 0 }
 
 // Define another closure named 'square' that returns the square of a number

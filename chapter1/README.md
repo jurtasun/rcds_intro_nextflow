@@ -11,7 +11,7 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
 ### Chapter 1. Introduction to `Groovy`
 
-`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which in turn is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code. It was created to make it easier to write and manage complex workflows, especially in fields like bioinformatics and data science.
+`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code, in the same way that `Groovy` can run any `Java` syntax. By *superset* here we just mean that `Groovy` introduces new syntax and features (like optional semicolons, closures, string interpolation, etc.) that go beyond plain `Java`. It was created in 2003 to make it easier to write and manage complex workflows, such that if could feel as dynamic and concise as languages like `Python` but keeping the `Java` ecosystem, especially in fields like bioinformatics and data science.
 
 As we will see, `Nextflow` uses `Groovy` syntax under the hood. Before running any `Nextflow` syntax, let's dig a little deeper into `Groovy` itself, as understanding how it works will help us write more powerful and flexible workflows in `Nextflow`.
 
@@ -21,11 +21,11 @@ This first exercise introduces `Groovy`'s basic syntax, which is similar to `Jav
 
 Next, we will use string interpolation with double-quoted strings, allowing variables to be embedded directly in strings using the `$variableName` syntax. This is a cleaner way to build strings than concatenation.
 
-Then, we will use loops using a range (1..10) iterate through a set of values and printing each time a different message.
+Then, we will use loops using a range (1, ..., 10) to iterate through a set of values and print each time a different message.
 
-Write a `Groovy` script that:
-- Declares a variable name with your name.
-- Prints "Hello, <name>!".
+Write a `Groovy` script named `variables.groovy` that:
+- Declares a variable `name` and assign your name.
+- Prints "Hello, `name`!".
 - Then, prints numbers from 1 to 5 using a loop.
 
 ```groovy
@@ -44,11 +44,11 @@ for (i in 1..5) {
 }
 ```
 
-We can modify this a little. Inside the loop, conditional statements (`if`, `else`) can be used to apply logic to each value, filtering even numbers and printing a specific message for some values. For instance, numbers divisible by 4. These are foundational tools for controlling flow in any `Groovy` (or `Nextflow`) script.
+We can modify this a little. Inside the loop, conditional statements (`if`, `else`) can be used to apply logic to each value, filtering even / odd numbers and printing a specific message for some values. For instance, numbers divisible by 4. These are foundational tools for controlling flow in any `Groovy` (or `Nextflow`) script.
 
 Edit the script to do the following:
-- Declares a variable name and age.
-- Prints a greeting like: "Hello, <name>! You are <age> years old."
+- Declares a variable `name` and another one `age`.
+- Prints a greeting like: "Hello, `name`! You are `age` years old."
 - Loops from 1 to 10 and: Prints even numbers only. If the number is divisible by 4, also print "Divisible by 4!".
 
 ```groovy
@@ -84,13 +84,13 @@ for (i in 1..10) {
 
 ### 1.2. Maps, parameters, data processing.
 
-This exercise explores one of `Groovy`'s most powerful and commonly used structures: maps. A map is a collection of key-value pairs, and `Groovy` provides very concise syntax for creating and accessing them. Maps are heavily used in `Nextflow` configurations, parameter passing, and data modelling. Indeed, if you have some prior coding experience, you shall find that maps are similar to dictionaries in modern languages such as `Python`.
+This exercise explores one of `Groovy`'s most powerful and commonly used structures: maps. A map is a collection of key-value pairs, and `Groovy` provides very concise syntax for creating and accessing them. Maps are heavily used in `Nextflow` configurations, when accessing parameters and modelling data. Indeed, if you have some prior coding experience, you shall find that maps are similar to dictionaries in modern languages such as `Python`.
 
-Let's write a function (or *method*) that takes a map as input and constructs a description string. This function demonstrates `Groovy`'s support for dynamic typing and named parameters via maps.
+Let's write a function (or *method*) that takes a map as input and constructs some descriptive string. This function demonstrates `Groovy`'s support for dynamic typing and named parameters via maps.
 
-Write a `Groovy` script that:
-- Creates a map person with keys: name, age, and city.
-- Write a function describePerson(Map person) that returns a string like: "Alice is 30 years old and lives in London."
+Write a `Groovy` script named `maps.goovy` that:
+- Creates a `map` person with keys: `name`, `age`, and `city`.
+- Write a function `describePerson()` that takes the `map` as input returns a string like: "Alice is 30 years old and lives in London."
 - Call the function and print the result.
 
 ```groovy
@@ -113,11 +113,11 @@ println describePerson(person)
 We could also use the `Elvis` operator (`?:`) to supply default values if certain keys are missing from the map, which is a common and elegant way to handle optional inputs.
 The `Elvis` operator is a shorthand in `Groovy` - and other languages - used to provide a default value if something is `null` or `false`.
 
-Finally, we could practice conditional string construction: for example, only appending the job description if it exists. This shows how you can write expressive logic in compact, readable code using `Groovy`'s flexible syntax.
+Finally, we could practice conditional string construction: for example, only appending the job description if it exists. This shows we you can write expressive logic in compact, readable code using `Groovy`'s flexible syntax.
 
 Edit the script to do the following:
-- Create a map person with: name, age, city, and optionally job.
-- Write a function describePerson(Map person) that: Returns a sentence describing the person. Includes job only if it's provided.
+- Create a `map` person with: `name`, `age`, `city`, and optionally `job`.
+- Write a function `describePerson()`that: Returns a sentence describing the person. Includes job only if it's provided.
 - The function uses default values if some keys are missing.
 
 ```groovy
@@ -134,12 +134,48 @@ String describePerson(Map person) {
 
     // Use the Elvis operator (?:) to provide a default value if field is missing or null
     def name = person.name ?: "Unknown"
-    def age = person.age ?: "unspecified age"
-    def city = person.city ?: "an unknown city"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
-    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    def jobInfo = person.job ? " and works as in ${person.job}" : ""
     
+    // Return full description using string interpolation
+    return "$name is $age years old, lives in $city$jobInfo."
+
+}
+
+// Call function with the 'person' map as input
+println describePerson(person)
+```
+
+You shall notice that we are defining `jobInfo` in a different way than `name`, `age`, `city`, using here a ternary ooperator `? "..." : ""`.
+This is the equivalent to an `if-else` statement in languages such as `R` or `Python`. You can verify that the following syntax should execute exatcly the same message.
+
+```groovy
+// Define map called 'person' with key-value pairs for name, age, city, and job
+def person = [
+    name: "Alice",
+    age : 30,
+    city: "London",
+    job : "Data science"
+]
+
+// Define function that takes a map (like 'person') and returns a string
+String describePerson(Map person) {
+
+    // Use the Elvis operator (?:) to provide a default value if field is missing or null
+    def name = person.name ?: "Unknown"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
+
+    // If job is present, build a string with job info; otherwise, use an empty string
+    if (person.job) {
+        jobInfo = " and works in ${person.job}"
+    } else {
+        jobInfo = ""
+    }
+
     // Return full description using string interpolation
     return "$name is $age years old, lives in $city$jobInfo."
 
@@ -151,9 +187,9 @@ println describePerson(person)
 
 Try modifying the person map to omit `job` or `age` and rerun to see the default behavior.
 
-The original code defined a fixed person map with hardcoded values for name, age, city, and job. To make the program interactive, we can modified it to read these values from the keyboard at runtime. To do this, we will define a helper function `readInput` that prompts the user for input and captures their response. The `person` map is then populated with these user-provided values instead of static data. This approach allows the program to describe any person based on the information entered by the user, making it more flexible and dynamic.
+The original code defined a fixed person map with hardcoded values for name, age, city, and job. To make the program interactive, we can modified it to read these values from the keyboard at runtime. To do this, we will define a helper function `readInput` that prompts the user for input and captures their response. The `person` map will be filled with these user-provided values instead of static data. This approach allows the program to describe any person based on the information entered by the user, making it more flexible and dynamic.
 
-The `def console = System.console()` attempts to obtain the system console object associated with the running Java Virtual Machine (JVM). The `System.console()` method returns a `Console` instance if the program is running in an interactive command-line environment where input and output are connected to a console (like a terminal). If the program is run in an environment without a console—for example, inside some IDEs, background processes, or when input/output is redirected—this method returns `null`. By assigning this to the variable console, the program can then check if it has access to a console and decide how to read user input accordingly.
+For that purpose we will use the `System.console()` method and the `console.reaLine()` to capture user's information.
 
 ```groovy
 // Function to read input with a prompt and return the entered value
@@ -162,7 +198,51 @@ String readInput(String prompt) {
     // Print input message
     print prompt
     
-    // Try to get the system console
+    // Get the system console to enable user input
+    def console = System.console()
+
+    // If console is available, read input from console
+    return console.readLine()
+
+}
+
+// Read map values from keyboard
+def person = [
+    name: readInput("Enter name: "),
+    age : readInput("Enter age: "),
+    city: readInput("Enter city: "),
+    job : readInput("Enter job: ")
+]
+
+// Define function that takes a map (like 'person') and returns a string
+String describePerson(Map person) {
+
+    // Use the Elvis operator (?:) to provide a default value if field is missing or null
+    def name = person.name ?: "Unknown"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
+
+    // If job is present, build a string with job info; otherwise, use an empty string
+    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    
+    // Return full description using string interpolation
+    return "$name is $age years old, lives in $city$jobInfo."
+}
+
+// Call function with the 'person' map as input
+println describePerson(person)
+```
+
+We could make this a bit more robust, preventing the case where no input is provided by the user. If the program is run in an environment without a console (for example, inside some IDEs, background processes, or when input/output is redirected) this method just returns `null`.
+
+```groovy
+// Function to read input with a prompt and return the entered value
+String readInput(String prompt) {
+
+    // Print input message
+    print prompt
+    
+    // Get the system console to enable user input
     def console = System.console()
 
     // If console is available, read input from console
@@ -189,8 +269,8 @@ String describePerson(Map person) {
 
     // Use the Elvis operator (?:) to provide a default value if field is missing or null
     def name = person.name ?: "Unknown"
-    def age = person.age ?: "unspecified age"
-    def city = person.city ?: "an unknown city"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
     def jobInfo = person.job ? " and works as a ${person.job}" : ""
@@ -203,24 +283,43 @@ String describePerson(Map person) {
 println describePerson(person)
 ```
 
+Here the `def console = System.console()` attempts to obtain the system console object associated with the running Java Virtual Machine (JVM). The `System.console()` method returns a `Console` instance if the program is running in an interactive command-line environment where input and output are connected to a console (like a terminal). If the program is run in an environment without a console (for example, inside some IDEs, background processes, or when input/output is redirected) this method returns `null`. By assigning this to the variable console, the program can then check if it has access to a console and decide how to read user input accordingly.
+
 ### 1.3. Closures, collections, connection to `Nextflow`.
 
-Closures are first-class functions in `Groovy`, meaning they can be assigned to variables, passed as arguments, and used like any other object. They are a core feature of `Groovy` and are especially powerful when working with collections.
+Closures are first-class functions in `Groovy`, meaning they can be assigned to variables, passed as arguments, and used like any other object. They are a core feature of `Groovy` and are especially powerful when working with collections. Closures are equivalent to the so-called *anonymous functions* in languages like `Python`.
 
-In this exercise, we will define a closures to calculate squares (`square`). We will then use `Groovy`'s collection method `.collect()` - which take closures as arguments - to filter and transform a list.
+In this exercise, we will define a closure `square` to calculate squares. We will then use `Groovy`'s collection method `.collect()` - which takes closures as arguments - to filter and transform a list.
 
 These operations demonstrate how `Groovy` supports functional programming patterns. You can apply logic directly to lists without writing loops, resulting in more concise and expressive code. Closures are especially useful in data pipelines (like `Nextflow` processes), where we often pass logic into workflow steps or transformations.
 
-Write a `Groovy` script that:
-- Defines a closure square that takes a number and returns its square.
-- Uses it to square each number in the list [1, 2, 3, 4, 5].
+Write a `Groovy` script named `closures.groovy` that:
+- Defines a closure `square` that takes a number and returns its square.
+- Uses it to square each number in the list `[1, 2, 3, 4, 5]`.
 - Prints the resulting list.
 
 ```groovy
-// Define closure (anonymous function) named 'square' that returns the square of a number
+// Define closure that returns the square of a number
 def square = { x -> x * x }
 
-// Create a list of numbers from 1 to 5
+// Create a list of numbers
+def numbers = [1, 2, 3, 4, 5]
+
+// Use the 'collect' method on the 'square' closure to square each even number
+def squares = numbers.collect { n -> square(n) }
+
+// Print results
+println "Original: $numbers"
+println "Squared: $squares"
+```
+
+There is a more compact way of refering closure parameters - and indeed quite common in `Nextflow` - named the `$it` default shorthand variable. `$it` is the implicit name of a parameter in a closure when no explicit parameter is defined. This means if you write a closure like `{ println it }`, `Groovy` automatically assumes a single argument called `it`. For example, `numbers.collect { it * 2 }` would double each element of the list, where `it` refers to the current element. Check that the following code excutes exatly the same message as before.
+
+```groovy
+// Define closure that returns the square of a number
+def square = { x -> x * x }
+
+// Create a list of numbers
 def numbers = [1, 2, 3, 4, 5]
 
 // Use the 'collect' method on the 'square' closure to square each even number
@@ -228,10 +327,10 @@ def squares = numbers.collect { square(it) }
 
 // Print results
 println "Original: $numbers"
-println "Squared : $squares"
+println "Squared: $squares"
 ```
 
-In this exercise, we will define two closures: one to test whether a number is even (`isEven`), and one to calculate squares (`square`). We will then use Groovy's collection methods like `.findAll()` and `.collect()` - which take closures as arguments - to filter and transform a list.
+Using `it` keeps closures short and concise, but if clarity is needed (for example, in more complex code), you can explicitly name the parameter, like we just did earlier. Let's modify this exercise to define now two closures: one to test whether a number is even (`isEven`), and one to calculate squares (`square`). We will then use Groovy's collection methods like `.findAll()` and `.collect()` - which take closures as arguments - to filter and transform a list.
 
 Edit the script to do the following:
 - Define a closure isEven that returns true if a number is even.
@@ -240,13 +339,13 @@ Edit the script to do the following:
 - Print the original list, even numbers, and their squares.
 
 ```groovy
-// Define closure (anonymous function) named 'isEven' that checks if a number is even
+// Define closure that checks if a number is even
 def isEven = { n -> n % 2 == 0 }
 
-// Define another closure named 'square' that returns the square of a number
+// Define closure that returns the square of a number
 def square = { x -> x * x }
 
-// Create a list of numbers from 1 to 8
+// Create a list of numbers
 def numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 // Use the 'findAll' method with the 'isEven' closure to filter even numbers
@@ -261,7 +360,7 @@ println "Even numbers : $evens"
 println "Squared even numbers: $squaredEvens"
 ```
 
-Edit this file further to read the input numbers from a file `data/numbers.txt`.
+Edit this file further to read the input numbers from a file `data/numbers.txt`, and save in a results file called `results.txt`
 
 ```groovy
 // Define closure (anonymous function) named 'isEven' that checks if a number is even

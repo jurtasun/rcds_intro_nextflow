@@ -4,17 +4,11 @@ String readInput(String prompt) {
     // Print input message
     print prompt
     
-    // Try to get the system console
+    // Get the system console to enable user input
     def console = System.console()
 
     // If console is available, read input from console
-    if (console != null) {
-        return console.readLine()
-    } else {
-        // If console is not available (e.g., running in IDE), use Scanner to read input from System.in
-        Scanner scanner = new Scanner(System.in)
-        return scanner.nextLine()
-    }
+    return console.readLine()
 
 }
 
@@ -31,8 +25,8 @@ String describePerson(Map person) {
 
     // Use the Elvis operator (?:) to provide a default value if field is missing or null
     def name = person.name ?: "Unknown"
-    def age = person.age ?: "unspecified age"
-    def city = person.city ?: "an unknown city"
+    def age = person.age ?: "unspeficied"
+    def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
     def jobInfo = person.job ? " and works as a ${person.job}" : ""

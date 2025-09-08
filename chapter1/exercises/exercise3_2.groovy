@@ -1,10 +1,10 @@
-// Define closure (anonymous function) named 'isEven' that checks if a number is even
+// Define closure that checks if a number is even
 def isEven = { n -> n % 2 == 0 }
 
-// Define another closure named 'square' that returns the square of a number
+// Define closure that returns the square of a number
 def square = { x -> x * x }
 
-// Create a list of numbers from 1 to 8
+// Create a list of numbers
 def numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 // Use the 'findAll' method with the 'isEven' closure to filter even numbers
