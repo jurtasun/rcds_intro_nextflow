@@ -13,17 +13,15 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
 At the heart of Nextflow, three concepts work together to define and execute workflows: `channels`, `processes`, and `operators`.
 
-A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible.
+A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value, multiple values, or continuously produce values during execution.
 
-A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: inputs (declared through channel bindings), outputs (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work. `Processes` are reactive: they only execute when all their declared input channels have values available. This ensures precise dependency management without requiring explicit scheduling logic.
+A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: `inputs` (declared through channel bindings), `outputs` (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work. `Processes` are reactive: they only execute when all their declared input channels have values available. This ensures precise dependency management without requiring explicit scheduling logic.
 
-`Operators` are functions that transform `channels`. They allow to filter, map, group, or merge data streams before passing them to processes. For example, `.map { ... }` can transform each value in a channel, `.filter { ... }` can remove unwanted elements, and `.combine(...)` can join two channels together. `Operators` provide the expressive power to model complex data dependencies with concise, declarative syntax.
+Finally, `operators` are functions that transform `channels`. They allow to filter, map, group, or merge data streams before passing them to processes. For example, `.map(...)` can transform each value in a channel, `.filter(...)` can remove unwanted elements, and `.combine(...)` can join two channels together. `Operators` provide the expressive power to model complex data dependencies with concise, declarative syntax.
 
-### 1 Channels: data flow, queue and value channels.
+### 2.1. Channels: data flow, queue and value channels, channel factories.
 
 A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
-
-#### 1.1 Channel types.
 
 A **queue** channel is an *asynchronous* unidirectional FIFO queue that connects two processes or operators.
 
@@ -156,13 +154,13 @@ workflow {
 }
 ```
 
-#### 1.2. Channel factories.
+#### Channel factories
 
-Channel factories are `Nextflow` commands for creating channels that have implicit expected inputs and functions. There are several different Channel factories which are useful for different situations. The following sections will cover the most common channel factories. Besides the basic `of()` and `value()` factories for queue and value channeles, there are also the `fromList()` and `fromPath()`, among others.
+Channel factories are `Nextflow` commands for creating channels that have implicit expected inputs and functions. There are several different Channel factories which are useful for different situations. During the following chapters will cover the most common channel factories. Besides the basic `of()` and `value()` factories for queue and value channeles, there are also the `fromList()` and `fromPath()`, among others.
 
 We will see how they are used practice during the next chapters. For now, keep in mind that a `channel` is a data stream that connects different parts of a workflow, and that can be found mainly in these two species, *queue* and *value*. A note on syntax: Since version 20.07.0, `channel` was introduced as an alias of `Channel`, allowing factory methods to be specified as `channel.of()` or `Channel.of()`, and so on.
 
-#### 2. Processes: executing functions.
+### 2.2. Processes: executing functions.
 
 In `Nextflow`, a `process` is the basic computing tool used to execute functions, custom scripts or external tools. 
 The `process` definition starts with the keyword `process`, followed by the process name and then the process body delimited by curly brackets. 
@@ -180,11 +178,11 @@ process say_hello {
 However, the process body can contain up to five definition blocks:
 - **Directives**: initial declarations that define optional settings
 - **Input**: defines the expected input channel(s)
-- **Output***: defines the expected output channel(s)
+- **Output**: defines the expected output channel(s)
 - **When**: optional clause statement to allow conditional processes
 - **Script**: string statement that defines the command to be executed by the process' task
 
-##### 2.1 Script
+##### Script
 
 The `script` block is a string statement that defines the command to be executed by the `process`. 
 A `process` can execute only one `script` block, placed after the input and output declarations. 
@@ -214,7 +212,7 @@ workflow {
 ```
 
 If you execute this code you will see that a `work` directory appears. But our `greetings.txt` file seems to appear very deep, layers behind the `work` directory. 
-We will dig inside the structure of `Nextflow` pipelines soon, and why this is the case. 
+We will dig inside the structure of `Nextflow` ouptuts soon, and why this is the case. 
 For now, adding a `directive`, such as the `publishDir`, allows the output to appear directly in our current directory.
 
 ```nextflow
@@ -281,7 +279,7 @@ less ~/greetings.txt
 
 Add the `debug` directive to enable debugging mode for the process. This is useful to print the output of the process script in the console.
 
-##### 2.2 Inputs
+##### Inputs
 
 The input block defines the names and qualifiers of variables that refer to channel elements directed at the process. You can only define one input block at a time, and it must contain one or more input declarations. The `val` qualifier allows to receive data of any type as input. It can be accessed in the process script by using the specified input name. For example:
 
@@ -299,7 +297,7 @@ process BasicExample {
 
     script:
     """
-    echo process job $x
+    echo 'process job $x'
     """
 
 }
@@ -319,9 +317,11 @@ process job 2
 process job 3
 ```
 
-The channel guarantees that items are delivered in the same order as they have been sent - but - since the process is executed in a parallel manner, there is no guarantee that they are processed in the same order as they are received.
+The channel guarantees that items are delivered in the same order as they have been sent. But since the process is executed in a parallel manner, there is no guarantee that they are processed in the same order as they are received.
 
-##### 2.2.2 Input files
+##### Input files
+
+We can provide the input through a file, rather than hard-coded in the script, using the `.fromPath()` channel factory.
 
 ```nextflow
 // Create a queue channel from the file lines
@@ -338,7 +338,7 @@ process BasicExample {
 
     script:
     """
-    echo Processing: $x
+    echo 'Processing: $x'
     """
 }
 
@@ -348,7 +348,7 @@ workflow {
 }
 ```
 
-##### 2.2.3 Combine input channels
+##### Combine input channels
 
 A key feature of processes is the ability to handle inputs from multiple channels. 
 However, it is important to understand how channel contents and their semantics affect the execution of a process.
@@ -362,6 +362,7 @@ ch2 = Channel.of('a', 'b', 'c')
 
 // Define process
 process BasicExample {
+
     debug true
 
     input:
@@ -370,7 +371,7 @@ process BasicExample {
 
     script:
     """
-    echo $x and $y
+    echo '$x and $y'
     """
 }
 
@@ -399,6 +400,7 @@ ch2 = Channel.of('a')
 
 // Define process
 process BasicExample {
+
     debug true
 
     input:
@@ -407,7 +409,7 @@ process BasicExample {
 
     script:
     """
-    echo $x and $y
+    echo '$x and $y'
     """
 }
 
@@ -432,6 +434,7 @@ ch2 = Channel.value ('a')
 
 // Define process
 process BasicExample {
+
     debug true
 
     input:
@@ -440,7 +443,7 @@ process BasicExample {
 
     script:
     """
-    echo $x and $y
+    echo '$x and $y'
     """
 }
 
@@ -458,18 +461,17 @@ As `ch2` is now a value channel, it can be consumed multiple times and does not 
 3 and a
 ```
 
-#### 2.3 Outputs
+#### Outputs
 
 The output declaration block defines the channels used by the process to send out the results produced.
 
 Only one output block, that can contain one or more output declaration, can be defined. The output block follows the syntax shown below:
 
-##### 2.3.1 Output values
+##### Output values
 
 The val qualifier specifies a defined value in the script context. Values are frequently defined in the input and/or output declaration blocks, as shown in the following example:
 
-snippet.nf
-
+```nextflow
 greeting = "Hello world!"
 
 process FOO {
@@ -489,8 +491,9 @@ workflow {
     FOO(Channel.of(greeting))
         .view()
 }
+```
 
-##### 2.3.2 Output files
+##### Output files
 
 The path qualifier specifies one or more files produced by the process into the specified channel as an output.
 
@@ -514,7 +517,7 @@ In the above example the process RANDOMNUM creates a file named result.txt conta
 
 Since a file parameter using the same name is declared in the output block, the file is sent over the receiver_ch channel when the task is complete. A downstream process declaring the same channel as input will be able to receive it.
 
-##### 5.3.3 Multiple output files
+##### Multiple output files
 
 When an output file name contains a wildcard character (* or ?) it is interpreted as a glob path matcher. This allows us to capture multiple files into a list object and output them as a sole emission. For example:
 
@@ -545,6 +548,7 @@ Some caveats on glob pattern behavior:
 
 `Nextflow` operators are methods that allow to manipulate channels. Every operator, with the exception of `set` and `subscribe`, produces one or more new channels, 
 allowing to chain operators to fit your needs. There are seven main groups of operators are described in greater detail within the `Nextflow` Reference Documentation, linked below:
+
 - Filtering operators
 - Transforming operators
 - Splitting operators
