@@ -9,7 +9,7 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 <img src="/readme_figures/imperial_ecri.png" width = 700>
 <img src="/readme_figures/nextflow-logo.png" width = 700>
 
-### Chapter 1. Introduction to `Groovy`
+### Chapter 1. Introduction to `Groovy`.
 
 `Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code, in the same way that `Groovy` can run any `Java` syntax. By *superset* here we just mean that `Groovy` introduces new syntax and features (like optional semicolons, closures, string interpolation, etc.) that go beyond plain `Java`. It was created in 2003 to make it easier to write and manage complex workflows, such that if could feel as dynamic and concise as languages like `Python` but keeping the `Java` ecosystem, especially in fields like bioinformatics and data science.
 
