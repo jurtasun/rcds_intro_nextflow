@@ -9,12 +9,10 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 <img src="/readme_figures/imperial_ecri.png" width = 700>
 <img src="/readme_figures/nextflow-logo.png" width = 700>
 
-### Chapter 3. `Hello world` with `Nextflow`
+### Chapter 3. `Hello world` with `Nextflow`.
 
-In this first chapter we will illustrate with h a very basic `Hello World` example, 
-and we will progressively build up to introduce the usage of foundational `Nextflow` logic and components. 
-We will demonstrate the basic syntax and structure of a programming language or software framework.
-The example we will do consists of printing the phrase "Hello, World!" to the output device, such as the console or terminal, or writing it to a file.
+Let's warm up with a very basic `Hello World` example. Then we will progressively build up a more complex example, 
+introducing the usage of foundational `Nextflow` logic and components, as we saw in previous chapters. 
 
 Let's demonstrate how to write a simple sentence with a `bash` command directly in the terminal, to show what it does before we wrap it in `Nextflow`.
 Write the following command in your terminal:
@@ -44,7 +42,7 @@ cat output.txt
 Once we know how to run a simple command in the terminal that outputs some text, and how to write the output to a file,
 we can see how this would look like written as a `Nextflow` workflow.
 
-### 1. Hello World with `Nextflow`
+### 3.1. Hello World with `Nextflow`.
 
 Let's create a file called `hellow_world.nf` with the `touch` command:
 
@@ -89,7 +87,7 @@ while the **workflow** describes the logic, the data flow that connects the vari
 
 Let's take a closer look at the process block first, then we'll look at the workflow block.
 
-#### 1.1. The `process` definition
+#### The `process` definition
 
 The first block of code describes a **process**. Its definition starts with the keyword `process`, 
 followed by the process name and finally the process body delimited by curly braces. 
@@ -122,7 +120,7 @@ If we change one but not the other, the script will break. Later, you'll learn h
 
 In a real-world pipeline, a process usually contains additional blocks such as directives and inputs, which we'll introduce later as well.
 
-#### 1.2. The `workflow` definition
+#### The `workflow` definition
 
 The second block of code describes the **workflow** itself. The definition starts with the keyword `workflow`, 
 followed by an optional name, then the workflow body delimited by curly braces.
@@ -144,9 +142,9 @@ and the processes expect one or more variable inputs.
 
 You'll learn how to add variable inputs later and how to add more processes and connect them by channels in further chapters of this course.
 
-### 2. Run the `hello_world.nf` `Nextflow` script
+### 3.2. Run the `hello_world.nf` `Nextflow` script.
 
-#### 2.1. Run and check execution
+#### Run and check execution
 
 Let's try this out this in practice. In the terminal, run the code with the following command:
 
@@ -173,7 +171,7 @@ Congratulations, you just ran your first `Nextflow` workflow! The most important
 This tells us that the `say_hello` process was successfully executed once (`1 of 1 ✔`).
 Importantly, this line also tells you where to find the output of the say_hello process call. Let's look at that now.
 
-#### 2.2. Check output in the `work` directory
+#### Check output in the `work` directory
 
 When you run `Nextflow` for the first time in a given directory, 
 it creates a directory called `work` where it will write all files (and any symlinks) generated during the execution.
@@ -232,11 +230,11 @@ The actual output of the `say_hello` process is `output.txt`. Open it and you wi
 
 Let's now learn how to manage the workflow executions conveniently.
 
-### 3. Directives and manage executions
+### 3.3. Directives and manage executions.
 
 Here we will learn to use the `publishDir` directive to store in an output folder all the main results from your pipeline run, the `resume` feature for when you need to re-launch the same workflow, and how to delete older work directories with `nextflow clean`.
 
-#### 3.1. Publish outputs
+#### Publish outputs
 
 As we have just seen, the output produced by our pipeline is buried in a working directory several layers deep. 
 This is done on purpose; `Nextflow` is in control of this directory and we are not supposed to interact with it. 
