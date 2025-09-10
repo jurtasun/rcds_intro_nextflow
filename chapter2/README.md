@@ -23,6 +23,8 @@ Finally, `operators` are functions that transform `channels`. They allow to filt
 
 A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
 
+#### Queue channels
+
 A **queue** channel is an *asynchronous* unidirectional FIFO queue that connects two processes or operators.
 
 - asynchronous means that operations are non-blocking.
@@ -66,6 +68,8 @@ workflow {
 ```
 
 When you run this script, it only prints `2`. A process will only instantiate a task when there are elements to be consumed from all the channels provided as input to it. Because `ch1` and `ch2` are queue channels, and the single element of `ch2` has been consumed, no new process instances will be launched, even if there are other elements to be consumed in `ch1`.
+
+#### Value channels
 
 A **value** channel (a.k.a. a *singleton* channel) is bound to a single value and it can be read unlimited times without consuming its contents. It is created using the `Channel.value()` channel factory or by operators returning a single value, such as `first`, `last`, `collect`, `count`, `min`, `max`, `reduce`, and `sum`. 
 To see the difference between value and queue channels, edit the `channels.nf` file to contain the following: 
@@ -319,8 +323,6 @@ process job 3
 
 The channel guarantees that items are delivered in the same order as they have been sent. But since the process is executed in a parallel manner, there is no guarantee that they are processed in the same order as they are received.
 
-##### Input files
-
 We can provide the input through a file, rather than hard-coded in the script, using the `.fromPath()` channel factory.
 
 ```nextflow
@@ -347,8 +349,6 @@ workflow {
     BasicExample(ch1)
 }
 ```
-
-##### Combine input channels
 
 A key feature of processes is the ability to handle inputs from multiple channels. 
 However, it is important to understand how channel contents and their semantics affect the execution of a process.
@@ -463,18 +463,16 @@ As `ch2` is now a value channel, it can be consumed multiple times and does not 
 
 #### Outputs
 
-The output declaration block defines the channels used by the process to send out the results produced.
-
+The output declaration block defines the channels used by the process to send out the results produced. 
 Only one output block, that can contain one or more output declaration, can be defined. The output block follows the syntax shown below:
 
-##### Output values
-
-The val qualifier specifies a defined value in the script context. Values are frequently defined in the input and/or output declaration blocks, as shown in the following example:
-
 ```nextflow
+// Define a greeting
 greeting = "Hello world!"
 
-process FOO {
+// Define process
+process BasicExample {
+
     input:
     val x
 
@@ -485,44 +483,57 @@ process FOO {
     """
     echo $x > file
     """
+
 }
 
+// Define workflow
 workflow {
-    FOO(Channel.of(greeting))
+    BasicExample(Channel.of(greeting))
         .view()
 }
 ```
 
-##### Output files
+The path qualifier specifies one or more files produced by the process into the specified channel as an output. 
+Here we are using the `view()` operator to visualize the result.
 
-The path qualifier specifies one or more files produced by the process into the specified channel as an output.
+```nextflow
+// Define process
+process RandomNum {
 
-snippet.nf
+    publishDir "./", mode: 'copy'  // publish result to your current directory
 
-process RANDOMNUM {
     output:
-    path 'result.txt'
+    path 'random_number.txt'
 
     script:
     """
-    echo \$RANDOM > result.txt
+    echo \$RANDOM > random_number.txt
     """
+
 }
 
+// Define workflow
 workflow {
-    receiver_ch = RANDOMNUM()
+    receiver_ch = RandomNum()
     receiver_ch.view()
 }
-In the above example the process RANDOMNUM creates a file named result.txt containing a random number.
+```
 
-Since a file parameter using the same name is declared in the output block, the file is sent over the receiver_ch channel when the task is complete. A downstream process declaring the same channel as input will be able to receive it.
+In the above example the process `RandomNum` creates a file named `random_number.txt` containing a random number. 
+Since a file parameter using the same name is declared in the output block, the file is sent over the `receiver_ch` channel when the task is complete. 
+A downstream process declaring the same channel as input will be able to receive it.
 
 ##### Multiple output files
 
-When an output file name contains a wildcard character (* or ?) it is interpreted as a glob path matcher. This allows us to capture multiple files into a list object and output them as a sole emission. For example:
+When an output file name contains a wildcard character (`*` or `?`) it is interpreted as a glob path matcher. 
+This allows us to capture multiple files into a list object and output them as a sole emission. For example:
 
 ```nextflow
-process SPLITLETTERS {
+// Define process
+process SplitLetters {
+
+    publishDir "./", mode: 'copy'  // publish result to your current directory
+
     output:
     path 'chunk_*'
 
@@ -530,19 +541,22 @@ process SPLITLETTERS {
     """
     printf 'Hola' | split -b 1 - chunk_
     """
+
 }
 
+// Define workflow
 workflow {
-    letters = SPLITLETTERS()
+    letters = SplitLetters()
     letters.view()
 }
 ```
-Prints the following:
 
-```bash
-[/workspaces/training/nf-training/work/ca/baf931d379aa7fa37c570617cb06d1/chunk_aa, /workspaces/training/nf-training/work/ca/baf931d379aa7fa37c570617cb06d1/chunk_ab, /workspaces/training/nf-training/work/ca/baf931d379aa7fa37c570617cb06d1/chunk_ac, /workspaces/training/nf-training/work/ca/baf931d379aa7fa37c570617cb06d1/chunk_ad]
-```
-Some caveats on glob pattern behavior:
+Here the process splits the input (`Hola`) into chunks of 1 byte each, writing them into separate files with prefix `chunk_`. Hence you should see the following outpus:
+
+- `chunk_aa`, contains the first letter (4-byte chunk): `H`
+- `chunk_ab`, contains the first letter (4-byte chunk): `o`
+- `chunk_ac`, contains the first letter (4-byte chunk): `l`
+- `chunk_ad`, contains the first letter (4-byte chunk): `a`
 
 #### 3. Operators: produce, chain and manipulate channels.
 
