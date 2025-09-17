@@ -97,6 +97,7 @@ workflow {
 
     // emit a greeting
     say_hello(greeting_ch)
+
 }
 ```
 
@@ -104,8 +105,6 @@ This tells Nextflow to run the `say_hello` process on the contents of the `greet
 Now our workflow is properly functional; it is the explicit equivalent of writing `say_hello('Hello Channels!')`.
 
 You can check the results directory to satisfy yourself that the outcome is still the same as previously.
-So far we're just progressively tweaking the code to increase the flexibility of our workflow, while achieving the same end result.
-This may seem like we're writing more code for no real benefit, but the value will become clear as soon as we start handling more inputs.
 
 ### 4.2. Adapt workflow to accept multiple inputs.
 
@@ -163,7 +162,7 @@ Launching `hello_channels.nf` [pensive_poitras] DSL2 - revision: 778deadaea
 [c1/097679] Submitted process > say_hello (2)
 ```
 
-That's much better; at least for a simple workflow. For a complex workflow, or a large number of inputs, having the full list output to the terminal might get overwhelming, so you might not choose to use -ansi-log false in those cases. The way the status is reported is a bit different between the two logging modes. In the condensed mode, Nextflow reports whether calls were completed successfully or not. In this expanded mode, it only reports that they were submitted.
+That's much better; at least for a simple workflow. For a complex workflow, or a large number of inputs, having the full list output to the terminal might get overwhelming, so you might not choose to use -ansi-log false in those cases.
 
 That being said, we have another problem. If you look in the results directory, there is only one file: `output.txt`.
 We should be expecting a separate file per input greeting, so why do we get a single file? All three calls produced a file called `output.txt`. 
@@ -195,6 +194,7 @@ process say_hello {
     """
     echo '$greeting' > output.txt
     """
+
 }
 ```
 
@@ -208,25 +208,20 @@ process say_hello {
         val greeting
 
     output:
-        path "${greeting}_output.txt"
+        path "output_${greeting}.txt"
 
     script:
     """
-    echo '$greeting' > '${greeting}_output.txt'
+    echo '$greeting' > 'output_${greeting}.txt'
     """
+
 }
 ```
 
 Make sure to replace `output.txt` in both the `output:` definition and in the `script:` command block.
 In the output definition, you **must** use double quotes around the output filename expression (NOT single quotes), otherwise it will fail.
 
-And run it again:
-
-```bash
-nextflow run hello_channels.nf
-```
-
-Check we have now three new files in addition to the one we already had in the `results` directory.
+Run it again and check we have now three new files in addition to the one we already had in the `results` directory.
 Success! Now we can add as many greetings as we like without worrying about output files being overwritten.
 
 In practice, naming files based on the input data itself is almost always impractical. 
