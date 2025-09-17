@@ -11,7 +11,7 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
 ### Chapter 1. Introduction to `Groovy`.
 
-`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which is a super-set of the `Java` programming language. This means that `Nextflow` can run any `Groovy` or `Java` code, in the same way that `Groovy` can run any `Java` syntax. By *superset* here we just mean that `Groovy` introduces new syntax and features (like optional semicolons, closures, string interpolation, etc.) that go beyond plain `Java`. It was created in 2003 to make it easier to write and manage complex workflows, such that if could feel as dynamic and concise as languages like `Python` but keeping the `Java` ecosystem, especially in fields like bioinformatics and data science.
+`Nextflow` is a domain specific language (DSL) implemented on top of the `Groovy` programming language, which is a super-set of the `Java` programming language. By *superset* here we just mean that `Groovy` introduces new syntax and features (like optional semicolons, closures, string interpolation, etc.) that go beyond plain `Java`. This means that `Nextflow` can run any `Groovy` or `Java` code, in the same way that `Groovy` can run any `Java` syntax. It was created in 2003 to make it easier to write and manage complex workflows, while feeling as dynamic and concise as languages like `Python` but keeping the `Java` ecosystem, especially in fields like bioinformatics and data science.
 
 As we will see, `Nextflow` uses `Groovy` syntax under the hood. Before running any `Nextflow` syntax, let's dig a little deeper into `Groovy` itself, as understanding how it works will help us write more powerful and flexible workflows in `Nextflow`.
 
@@ -49,7 +49,7 @@ We can modify this a little. Inside the loop, conditional statements (`if`, `els
 Edit the script to do the following:
 - Declares a variable `name` and another one `age`.
 - Prints a greeting like: "Hello, `name`! You are `age` years old."
-- Loops from 1 to 10 and: Prints even numbers only. If the number is divisible by 4, also print "Divisible by 4!".
+- Loops from 1 to 10 and, prints even numbers only, and if the number is divisible by 4, also print "Divisible by 4!".
 
 ```groovy
 // Define a variable 'name' and assign it a string value
@@ -113,11 +113,11 @@ println describePerson(person)
 We could also use the `Elvis` operator (`?:`) to supply default values if certain keys are missing from the map, which is a common and elegant way to handle optional inputs.
 The `Elvis` operator is a shorthand in `Groovy` - and other languages - used to provide a default value if something is `null` or `false`.
 
-Finally, we could practice conditional string construction: for example, only appending the job description if it exists. This shows we you can write expressive logic in compact, readable code using `Groovy`'s flexible syntax.
+Finally, we could practice conditional string construction: for example, only appending the job description *if it exists*. This shows we you can write expressive logic in compact, readable code using `Groovy`'s flexible syntax.
 
 Edit the script to do the following:
 - Create a `map` person with: `name`, `age`, `city`, and optionally `job`.
-- Write a function `describePerson()`that: Returns a sentence describing the person. Includes job only if it's provided.
+- Write a function `describePerson()`that: Returns a sentence describing the person, and includes job only if it's provided.
 - The function uses default values if some keys are missing.
 
 ```groovy
@@ -126,7 +126,7 @@ def person = [
     name: "Alice",
     age : 30,
     city: "London",
-    job : "Data Scientist"
+    job : "Data Science"
 ]
 
 // Define function that takes a map (like 'person') and returns a string
@@ -138,7 +138,7 @@ String describePerson(Map person) {
     def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
-    def jobInfo = person.job ? " and works as in ${person.job}" : ""
+    def jobInfo = person.job ? " and works as ${person.job}" : ""
     
     // Return full description using string interpolation
     return "$name is $age years old, lives in $city$jobInfo."
@@ -158,7 +158,7 @@ def person = [
     name: "Alice",
     age : 30,
     city: "London",
-    job : "Data science"
+    job : "Data Science"
 ]
 
 // Define function that takes a map (like 'person') and returns a string
@@ -223,7 +223,7 @@ String describePerson(Map person) {
     def city = person.city ?: "unknown city"
 
     // If job is present, build a string with job info; otherwise, use an empty string
-    def jobInfo = person.job ? " and works as a ${person.job}" : ""
+    def jobInfo = person.job ? " and works in ${person.job}" : ""
     
     // Return full description using string interpolation
     return "$name is $age years old, lives in $city$jobInfo."
@@ -289,7 +289,7 @@ Here the `def console = System.console()` attempts to obtain the system console 
 
 Closures are first-class functions in `Groovy`, meaning they can be assigned to variables, passed as arguments, and used like any other object. They are a core feature of `Groovy` and are especially powerful when working with collections. Closures are equivalent to the so-called *anonymous functions* in languages like `Python`.
 
-In this exercise, we will define a closure `square` to calculate squares. We will then use `Groovy`'s collection method `.collect()` - which takes closures as arguments - to filter and transform a list.
+In this exercise, we will define a closure `square` to compute squares. We will then use `Groovy`'s collection method `.collect()` - which takes closures as arguments - to filter and transform a list.
 
 These operations demonstrate how `Groovy` supports functional programming patterns. You can apply logic directly to lists without writing loops, resulting in more concise and expressive code. Closures are especially useful in data pipelines (like `Nextflow` processes), where we often pass logic into workflow steps or transformations.
 
@@ -333,10 +333,10 @@ println "Squared: $squares"
 Using `it` keeps closures short and concise, but if clarity is needed (for example, in more complex code), you can explicitly name the parameter, like we just did earlier. Let's modify this exercise to define now two closures: one to test whether a number is even (`isEven`), and one to calculate squares (`square`). We will then use Groovy's collection methods like `.findAll()` and `.collect()` - which take closures as arguments - to filter and transform a list.
 
 Edit the script to do the following:
-- Define a closure isEven that returns true if a number is even.
-- Define a closure square that returns the square of a number.
-- From the list [1, 2, 3, 4, 5, 6, 7, 8]: Filter even numbers. Square each even number.
-- Print the original list, even numbers, and their squares.
+- Define a closure `isEven` that returns true if a number is even.
+- Define a closure `square` that returns the square of a number.
+- From the list `[1, 2, 3, 4, 5, 6, 7, 8]`: Filter even numbers. Square each even number.
+- Prints the original list, even numbers, and their squares.
 
 ```groovy
 // Define closure that checks if a number is even
@@ -360,7 +360,8 @@ println "Even numbers : $evens"
 println "Squared even numbers: $squaredEvens"
 ```
 
-Edit this file further to read the input numbers from a file `data/numbers.txt`, and save in a results file called `results.txt`
+Edit this file further to read the input numbers from a file `data/numbers.txt`, and save in a results file called `results.txt`. 
+In this example we create files by using the `new File().eachLine{...}` and the `new File().write()` commands, to respectively read and write data.
 
 ```groovy
 // Define closure (anonymous function) named 'isEven' that checks if a number is even
