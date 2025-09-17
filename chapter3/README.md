@@ -71,6 +71,7 @@ process say_hello {
     """
     echo 'Hello World!' > output.txt
     """
+    
 }
 
 // Define workflow
@@ -288,7 +289,7 @@ If you check the contents it should match the output in the work subdirectory. T
 
 When you're dealing with very large files that you don't need to retain for long, you may prefer to set the `publishDir` directive to make a symbolic link to the file instead of copying it. However, if you delete the work directory as part of a cleanup operation, you will lose access to the file, so always make sure you have actual copies of everything you care about before deleting anything.
 
-#### 3.2. Re-launch a workflow with `-resume`
+#### 3.4. Re-launch a workflow with `-resume`
 
 Nextflow has an option called `-resume` that allows you to do this. Specifically, in this mode, any processes that have already been run with the exact same code, settings and inputs will be skipped. This means Nextflow will only run processes that you've added or modified since the last run, or to which you're providing new settings or inputs.
 
@@ -319,7 +320,7 @@ indicating that Nextflow has recognized that it has already done this work and s
 You can also see that the work subdirectory hash is the same as in the previous run. 
 Nextflow is literally pointing to the previous execution and saying "I already did that over there."
 
-### 4. Work on multiple inputs
+### 3.5. Add an input block to the process definition
 
 In its current state, our workflow uses a greeting hardcoded into the process command. 
 To add some flexibility we can use an input variable, so we can more easily change the greeting at runtime. 
@@ -329,11 +330,7 @@ This requires us to make three changes to our script:
 - Edit the process to use that input
 - Set up a command-line parameter and provide its value as an input to the process call
 
-Let's make these changes one at a time. 
-
-#### 4.1. Add an input block to the process definition
-
-First, add an input block to the process definition. In the process block, make the following modifications:
+Let's make these changes one at a time. First, add an input block to the process definition. In the process block, make the following modifications:
 
 *Before:*
 ```bash
@@ -362,7 +359,7 @@ process say_hello {
 
 Now the `greeting` variable is prefixed by val to tell Nextflow it's a value entered by keyboard, not a path.
 
-#### 4.2. Edit the process command to use the input variable
+#### 3.6. Edit the process command to use the input variable
 
 Now let's edit the process `script` section to use the input variable, instead of the original hardcoded value. 
 In the process block, make the following code change:
@@ -385,7 +382,7 @@ echo '$greeting' > output.txt
 
 Make sure to add the `$` symbol to tell Nextflow this is a variable name that needs to be replaced - also called *interpolated* - with the actual value.
 
-#### 4.3. Set up a CLI parameter and provide it as input to the process call
+#### Set up a CLI parameter and provide it as input to the process call
 
 Now we need to actually set up a way to provide an input value to the `say_hello()` process call. 
 Nextflow has a built-in workflow parameter system called `params`, which makes it easy to declare and use CLI parameters. 
@@ -409,11 +406,7 @@ say_hello()
 say_hello(params.greeting)
 ```
 
-This tells Nextflow to run the `say_hello` process on the value provided through the `--greeting` parameter.
-
-#### 4.1.4. Run the workflow command again
-
-Let's run our modified script
+This tells Nextflow to run the `say_hello` process on the value provided through the `--greeting` parameter. Let's run our modified script
 
 ```bash
 nextflow run hello_world.nf --greeting 'Bonjour le monde!'
