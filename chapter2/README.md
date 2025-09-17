@@ -15,20 +15,20 @@ At the heart of Nextflow, three concepts work together to define and execute wor
 
 A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value, multiple values, or continuously produce values during execution.
 
-A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: `inputs` (declared through channel bindings), `outputs` (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work. `Processes` are reactive: they only execute when all their declared input channels have values available. This ensures precise dependency management without requiring explicit scheduling logic.
+A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: `inputs` (declared through channel bindings), `outputs` (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work.
 
 Finally, `operators` are functions that transform `channels`. They allow to filter, map, group, or merge data streams before passing them to processes. For example, `.map(...)` can transform each value in a channel, `.filter(...)` can remove unwanted elements, and `.combine(...)` can join two channels together. `Operators` provide the expressive power to model complex data dependencies with concise, declarative syntax.
 
 ### 2.1. Channels: data flow, queue and value channels, channel factories.
 
-A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
+A `channel` is a data stream that connects different parts of a workflow. They can emit a single value (`Channel.value`), multiple values (`Channel.from`), or continuously produce values during execution. As we will see, `channels` are asynchronous and immutable: once a value is put on a channel, it flows downstream, and processes can consume it without altering the channel itself. This design makes workflows both scalable and reproducible. `Nextflow` distinguishes two different kinds of channels: **queue** channels and **value** channels.
 
 #### Queue channels
 
 A **queue** channel is an *asynchronous* unidirectional FIFO queue that connects two processes or operators.
 
-- asynchronous means that operations are non-blocking.
-- unidirectional means that data flows from a producer to a consumer.
+- Asynchronous means that operations are non-blocking.
+- Unidirectional means that data flows from a producer to a consumer.
 - FIFO means that the data is guaranteed to be delivered in the same order as it is produced. First In, First Out.
 A queue channel is implicitly created by process output definitions or using channel factories such as `Channel.of()` or `Channel.fromPath()`.
 
@@ -39,7 +39,7 @@ ch = Channel.of(1, 2, 3)
 ch.view()
 ```
 
-Edit it to create two channels, `ch1` and `ch2`, and then uses them as inputs to the `SUM` process. The `SUM` process sums the two inputs and prints the result to the standard output. 
+You shall see that a `work` directory has appeared, together with some hidden files `.nextfow.log`. For now, let's ignore these and just focus on the output we see on screen. Let's now edit this to create two channels, `ch1` and `ch2`, and then uses them as inputs to the `SUM` process. The `SUM` process sums the two inputs and prints the result to the standard output. Finally the `workflow` section calls the `SUM` process on these two channels.
 
 ```nextflow
 // Create a queue channel with multiple values
@@ -171,15 +171,22 @@ The `process` definition starts with the keyword `process`, followed by the proc
 A basic process, only using the `script` definition block, looks like the following:
 
 ```nextflow
+// Define process
 process say_hello {
     script:
     """
     echo 'Hello world!'
     """
 }
+
+// Define workflow
+workflow {
+    say_hello()
+}
+
 ```
 
-However, the process body can contain up to five definition blocks:
+You should see a message saying that the `say_hello` process was executed once. However, the process body can contain up to five definition blocks:
 - **Directives**: initial declarations that define optional settings
 - **Input**: defines the expected input channel(s)
 - **Output**: defines the expected output channel(s)
@@ -249,7 +256,10 @@ Check the ouptut with
 less greetings.txt
 ```
 
-Edit the `publishDir` directive to contain `$Home` instead of `./`, allows the output to appear directly in our home directory.
+Edit the `publishDir` directive to contain `$HOME` instead of `./`, allows the output to appear directly in our home directory.
+As a note, anything that starts with the `$` is normally called an *environment variable*. They are key-value pairs defined in your operating system's environment.
+They are inherited by processes (like `Nextflow`, `bash` scripts, `Python` programs), and often store system paths, user information, configuration values, etc.
+Try typing in your terminal `echo $HOME`, `echo $USER`, `echo $SHELL`, `echo $PATH`.
 
 ```nextflow
 // Define process
@@ -285,7 +295,7 @@ Add the `debug` directive to enable debugging mode for the process. This is usef
 
 ##### Inputs
 
-The input block defines the names and qualifiers of variables that refer to channel elements directed at the process. You can only define one input block at a time, and it must contain one or more input declarations. The `val` qualifier allows to receive data of any type as input. It can be accessed in the process script by using the specified input name. For example:
+The input block defines the names and qualifiers of variables that refer to channel elements directed at the process. You can only define one input block at a time, and it must contain one or more input declarations. The `val` qualifier allows to receive data of any type as input. It can be accessed in the process `script` by using the specified input name. For example:
 
 ```nextflow
 // Create queue channel
