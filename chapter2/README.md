@@ -13,7 +13,7 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 
 At the heart of Nextflow, three concepts work together to define and execute workflows: `channels`, `processes`, and `operators`.
 
-A `channel` is a data stream that connects different parts of a workflow. Think of it as a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value, multiple values, or continuously produce values during execution.
+A `channel` is a data stream that connects different parts of a workflow. Think of it as queues, or a conveyor belt that carries values (files, strings, numbers, or complex objects) from one process to another. `Channels` can emit a single value, multiple values, or continuously produce values during execution.
 
 A `process` is the fundamental computational unit in `Nextflow`. Each `process` has three main parts: `inputs` (declared through channel bindings), `outputs` (emitted onto channels), and a `script` block which contains the command or script (often `Bash`, `R`, or `Python`) that does the work.
 
