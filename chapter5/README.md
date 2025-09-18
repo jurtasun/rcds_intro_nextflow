@@ -351,14 +351,15 @@ This shows you that the order in which elements flow through process calls is no
 
 Let's now learn how to pass more than one input to a process.
 
-### 3. Pass multiple input to a process and uniquely name the final output
+### 5.3. Pass multiple input to a process and uniquely name the final output
 
-We want to be able to name the final output file something specific in order to process subsequent batches of greetings without overwriting the final results. To that end, we're going to make the following refinements to the workflow:
+We want to name the final output file something specific, in order to process subsequent batches of greetings without overwriting the final results. 
+To that end, we're going to make the following refinements to the workflow:
 
 - Modify the collector process to accept a user-defined name for the output file
-- Add a command-line parameter to the workflow and pass it to the collector process
+- Add a command-line parameter to the workflow, then collect it
 
-#### 3.1. Modify the collector process to accept a user-defined name for the output file
+#### Modify collector process to accept a user-defined name for the output file
 
 First, declare the additional input in the process definition. Good news: we can declare as many input variables as we want. Let's call this one batch_name.
 In the process block, make the following code change:
@@ -384,11 +385,10 @@ Use the `batch_name` variable in the output file name. In the process block, mak
 
 This sets up the process to use the `batch_name` value to generate a specific filename for the final output of the workflow.
 
-#### 3.2. Add a batch command-line parameter
+#### Add a batch command-line parameter
 
 Now we need a way to supply the value for `batch_name` and feed it to the process call. 
 You already know how to use the `params` system to declare CLI parameters. Let's use that to declare a `batch` parameter, with a default value.
-
 In the pipeline parameters section, make the following code changes:
 
 ```nextflow
@@ -397,8 +397,7 @@ params.greeting = 'greetings.csv'
 params.batch = 'test-batch'
 ```
 
-Remember you can override that default value by specifying a value with `--batch` on the command line.
-
+Remember you can always override that default value by specifying a value with `--batch` on the command line.
 Now to pass the `batch` parameter to the process, we need to add it in the process call. In the workflow block, make the following code change:
 
 ```nextflow
@@ -406,12 +405,10 @@ Now to pass the `batch` parameter to the process, we need to add it in the proce
     collect_greetings(convert_to_upper.out.collect(), params.batch)
 ```
 
-#### 3.3. Run the workflow
-
 Let's try running this with a batch name on the command line.
 
 ```bash
-nextflow run hello-workflow.nf -resume --batch trio
+nextflow run hello_workflow.nf -resume --batch trio
 ```
 
 It runs successfully:
@@ -419,7 +416,7 @@ It runs successfully:
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-workflow.nf` [confident_rutherford] DSL2 - revision: bc58af409c
+Launching `hello_workflow.nf` [confident_rutherford] DSL2 - revision: bc58af409c
 
 executor >  local (1)
 [79/33b2f0] say_hello (2)       | 3 of 3, cached: 3 ✔
@@ -427,26 +424,27 @@ executor >  local (1)
 [b5/f19efe] collect_greetings   | 1 of 1 ✔
 ```
 
-And produces the desired output, that we can check with `cat results/COLLECTED-trio-output.txt`.
+And produces the desired output, that we can check with `cat results/collected_trio_output.txt`.
 Finally, we will learn how to emit multiple outputs and handle them conveniently.
 
-### 4. Add an output to the collector step
+### 5.4. Add an output to the collector step
 
-When a process produces only one output, it's easy to access it (in the workflow block) using the `<process>.out` syntax. When there are two or more outputs, the default way to select a specific output is to use the corresponding (zero-based) index; for example, you would use `<process>.out[0]` to get the first output. This is not terribly convenient; it's too easy to grab the wrong index. Let's have a look at how we can select and use a specific output of a process when there are more than one.
+When a process produces only one output, it's easy to access it in the workflow block by using the `<process>.out` syntax. 
+When there are two or more outputs, the default way to select a specific output is to use the corresponding (zero-based) index; 
+for example, you would use `<process>.out[0]` to get the first output, `<process>.out[1]` for the second, etc. 
+Careful here, as it it's too easy to grab the wrong index. Let's have a look at how we can select a specific output of a process when there are more than one.
 
 For demonstration purposes, let's say we want to count and report the number of greetings that are being collected for a given batch of inputs. To that end, we're going to make the following refinements to the workflow:
 
 - Modify the process to count and output the number of greetings
-- Once the process has run, select the count and report it using `view` (in the workflow block)
+- Once the process has run, select the count and report it using `view` in the workflow block
 
-#### 4.1. Modify the process to count and output the number of greetings
+#### Modify the process to count and output the number of greetings
 
 This will require two key changes to the process definition: we need a way to count the greetings, then we need to add that count to the `output` block of the process.
-
 To count the number of greetings collected, Nextflow lets us add arbitrary code in the `script`: 
 block of the process definition, which comes in really handy for doing things like this.
-
-That means we can use the built-in `size()` function to get the number of files in the input_files array. 
+That means we can use the built-in `size()` function to get the number of files in the `input_files` array. 
 Add the following to the `collect_greetings` process block:
 
 ```nextflow
@@ -471,7 +469,7 @@ Add the following to the process block:
 
 The `emit`: tags are optional, and we could have added a tag to only one of the outputs. We add them both for clarity.
 
-#### 4.2. Report the output at the end of the workflow
+#### Report the output at the end of the workflow
 
 Now that we have two outputs coming out of the `collect_greetings` process, the `collect_greetings.out` output contains two channels:
 
@@ -493,9 +491,6 @@ Add the following to the workflow block:
 
 We could achieve a similar result with in many different ways, like using the count() operator, 
 but this allows us to show how to handle multiple outputs, which is what we are after now.
-
-### 4.3. Run the workflow
-
 Let's run for the last time our code with our batch of greetings
 
 ```nextflow

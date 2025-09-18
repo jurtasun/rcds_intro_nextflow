@@ -21,24 +21,6 @@ process say_hello {
 
 }
 
-// Process converting content of file to upper case
-process convert_to_upper {
-
-    publishDir 'results', mode: 'copy'
-
-    input:
-        path input_file
-
-    output:
-        path "upper_${input_file}"
-
-    script:
-    """
-    cat '$input_file' | tr '[a-z]' '[A-Z]' > 'upper_${input_file}'
-    """
-
-}
-
 // Workflow
 workflow {
 
@@ -50,10 +32,7 @@ workflow {
                         .map { item -> item[0] }
                         .view { csv -> "After map: $csv" }
                         
-    // Emit a greeting
+    // emit a greeting
     say_hello(greeting_ch)
-
-    // Convert to uppercase
-    convert_to_upper(say_hello.out)
 
 }

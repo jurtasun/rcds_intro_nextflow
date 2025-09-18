@@ -2,6 +2,7 @@
 
 // Pipeline parameters
 params.greeting = 'exercises/data/greetings_1.csv'
+params.batch = 'test_batch'
 
 // Process printing 'Hello World!' to a file
 process say_hello {
@@ -46,13 +47,14 @@ process collect_greetings {
 
     input:
         path input_files
+        val batch_name
 
     output:
-        path "collected_output.txt"
+        path "collected_${batch_name}_output.txt"
 
     script:
     """
-    cat ${input_files} > 'collected_output.txt'
+    cat ${input_files} > 'collected_${batch_name}_output.txt'
     """
 }
 
@@ -74,10 +76,9 @@ workflow {
     convert_to_upper(say_hello.out)
 
     // collect all the greetings into one file
-    collect_greetings(convert_to_upper.out.collect())
+    collect_greetings(convert_to_upper.out.collect(), params.batch)
 
     // optional view statements
     convert_to_upper.out.view { greeting -> "Before collect: $greeting" }
-    convert_to_upper.out.collect().view { greeting -> "After collect: $greeting" }
 
 }

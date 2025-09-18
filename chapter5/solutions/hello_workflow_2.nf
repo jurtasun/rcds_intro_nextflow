@@ -39,6 +39,23 @@ process convert_to_upper {
 
 }
 
+// Collect uppercase greetings into a single output file
+process collect_greetings {
+
+    publishDir 'results', mode: 'copy'
+
+    input:
+        path input_files
+
+    output:
+        path "collected_output.txt"
+
+    script:
+    """
+    cat ${input_files} > 'collected_output.txt'
+    """
+}
+
 // Workflow
 workflow {
 
@@ -55,5 +72,12 @@ workflow {
 
     // Convert to uppercase
     convert_to_upper(say_hello.out)
+
+    // collect all the greetings into one file
+    collect_greetings(convert_to_upper.out.collect())
+
+    // optional view statements
+    convert_to_upper.out.view { greeting -> "Before collect: $greeting" }
+    convert_to_upper.out.collect().view { greeting -> "After collect: $greeting" }
 
 }
