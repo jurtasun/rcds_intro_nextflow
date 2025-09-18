@@ -30,9 +30,9 @@ and put together the following syntax:
 #!/usr/bin/env nextflow
 
 // Pipeline parameters
-params.greeting = 'exercises/data/greetings.csv'
+params.greeting = 'exercises/data/greetings_1.csv'
 
-// Use echo to print 'Hello World!' to a file
+// Process printing 'Hello World!' to a file
 process say_hello {
         
     publishDir 'results', mode: 'copy'
@@ -70,20 +70,19 @@ workflow {
 Then run it to verify that runs as expected, with three calls to the `say_hello` process.
 
 ```bash
-nextflow run hello-workflow.nf
+nextflow run hello_workflow.nf
 ```
 
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-workflow.nf` [stupefied_sammet] DSL2 - revision: b9e466930b
+Launching `hello_workflow.nf` [stupefied_sammet] DSL2 - revision: b9e466930b
 
 executor >  local (3)
 [2a/324ce6] say_hello (3) | 3 of 3 ✔
 ```
 
-As previously, you will find the output files in the results directory, as specified by the `publishDir` directive.
-
+As previously, you will find the output files in the results directory, as specified by the `publishDir` directive. 
 We will now make the following changes to our workflow:
 
 1. Add a second step that converts the greeting to uppercase.
@@ -91,9 +90,7 @@ We will now make the following changes to our workflow:
 3. Add a parameter to name the final output file and pass that as a secondary input to the collection step.
 4. Make the collection step also output a simple statistic about what was processed.
 
-We're going to use the workflow script `hello-workflow.nf` as a starting point. It is equivalent to the script produced by working through Part 2 of this training course. Just to make sure everything is working, run the script once before making any changes:
-
-### 1. Add a second step to the workflow
+### 5.1. Add a second step to the workflow
 
 We're going to add a step to convert the greeting to uppercase. To that end, we need to do three things:
 
@@ -101,7 +98,7 @@ We're going to add a step to convert the greeting to uppercase. To that end, we 
 - Write a new process that wraps the uppercasing command.
 - Call the new process in the workflow block and set it up to take the output of the `say_hello()` process as input.
 
-#### 1.1. Define the uppercasing command and test it in the terminal
+#### Define the uppercasing command and test it in the terminal
 
 As an exercise, we will convert the output greetings to uppercase. For that we will use a classic UNIX tool called `tr` for 'text replacement', with the following syntax:
 
@@ -116,11 +113,7 @@ echo 'Hello World' | tr '[a-z]' '[A-Z]' > output_upper.txt
 ```
 
 The output is a text file called `output_upper.txt` that contains the uppercase version of the Hello World string.
-Let's now implement that change with our workflow.
-
-#### 1.1. Write the uppercasing step as a Nextflow process
-
-Add the following process definition to the workflow script:
+Let's now implement that change with our workflow. Add the following process definition to the workflow script:
 
 ```nextflow
 // Convert the greeting to uppercase with text replacement
@@ -132,21 +125,21 @@ process convert_to_upper {
         path input_file
 
     output:
-        path "${input_file}_upper"
+        path "upper_${input_file}"
 
     script:
     """
-    cat '$input_file' | tr '[a-z]' '[A-Z]' > '${input_file}_upper'
+    cat '$input_file' | tr '[a-z]' '[A-Z]' > 'upper_${input_file}'
     """
 
 }
 ```
 
-Here, we compose the second output filename based on the input filename, similarly to what we did originally for the output of the first process.
+Here, we compose the second output filename based on the input filename, similarly to what we did originally for the output of the first process. 
+Note that Nextflow will determine the order of operations based on the chaining of inputs and outputs in the workflow. 
+Nevertheless, it is always a good practice to write them in a logical order for the sake of readability.
 
-Note that Nextflow will determine the order of operations based on the chaining of inputs and outputs, so the order of the process definitions in the workflow script does not matter. Nevertheless, it is always a good practice to write them in a logical order for the sake of readability.
-
-#### 1.2. Add a call to the new process in the workflow block
+#### Add a call to the new process in the workflow block
 
 Now we need to tell Nextflow to actually call the process that we just defined. In the workflow block, add the following call to `convert_to_upper()`:
 
@@ -160,15 +153,13 @@ Now we need to tell Nextflow to actually call the process that we just defined. 
 
 ```
 
-This is not yet functional because we have not specified what should be input to the `convert_to_upper()` process.
-
-#### 1.3. Pass the output of the first process to the second process
-
+This is not yet functional because we have not specified what should be input to the `convert_to_upper()` process. 
 Now we need to make the output of the `say_hello()` process flow into the `convert_to_upper()` process.
 
-Conveniently, Nextflow automatically packages the output of a process into a channel called `<process>.out`. So the output of the `say_hello` process is a channel called `say_hello.out`, which we can plug straight into the call to `convert_to_upper()`.
+Conveniently, Nextflow automatically packages the output of a process into a channel called `<process>.out`. 
+So the output of the `say_hello` process is a channel called `say_hello.out`, which we can plug straight into the call to `convert_to_upper()`.
 
-In the workflow block, make the following change in the call to `converToUpper()`:
+In the workflow block, make the final edit in the call to `converToUpper()`:
 
 ```nextflow
 
@@ -177,7 +168,7 @@ In the workflow block, make the following change in the call to `converToUpper()
 
 ```
 
-#### 1.4. Run the workflow again with `-resume`
+#### Run the workflow again with `-resume`
 
 Let's run this using the `-resume` flag, since we've already run the first step of the workflow successfully.
 
@@ -197,62 +188,35 @@ executor >  local (3)
 [b3/d52708] convert_to_upper (3) | 3 of 3 ✔
 ```
 
-Let's have a look inside the work directory of one of the calls to the second process.
-
-```bash
-work/b3/d52708edba8b864024589285cb3445/
-├── Bonjour-output.txt -> /workspaces/training/hello-nextflow/work/79/33b2f0af8438486258d200045bd9e8/Bonjour-output.txt
-└── Bonjour-output_upper.txt
-```
-
-The output of the first process is in there because Nextflow staged it there in order to have everything needed for execution within the same subdirectory. However, it is actually a symbolic link pointing to the the original file in the subdirectory of the first process call. By default, when running on a single machine as we're doing here, Nextflow uses symbolic links rather than copies to stage input and intermediate files.
-
-You'll also find the final outputs in the `results` directory since we used the `publishDir` directive in the second process too.
-
-```bash
-results
-├── Bonjour-output.txt
-├── Hello-output.txt
-├── Holà-output.txt
-├── UPPER-Bonjour-output.txt
-├── UPPER-Hello-output.txt
-└── UPPER-Holà-output.txt
-```
-
-Think about how all we did was connect the output of `say_hello` to the input of `convert_to_upper` and the two processes could be run in series. Nextflow did the hard work of handling individual input and output files and passing them between the two commands for us.
+Think about how all we did was connect the output of `say_hello` to the input of `convert_to_upper` and the two processes could be run in series. 
+Nextflow did the hard work of handling individual input and output files and passing them between the two commands for us.
 
 This is one of the reasons Nextflow channels are so powerful: they take care of the busywork involved in connecting workflow steps together. 
 Let's now learn how to collect outputs from batched process calls and feed them into a single process.
 
-### 2. Add a third step to collect all the greetings
+### 5.2. Add a third step to collect all the greetings
 
 When we use a process to apply a transformation to each of the elements in a channel, like we're doing here to the multiple greetings, we sometimes want to collect elements from the output channel of that process, and feed them into another process that performs some kind of analysis or summation. In the next step we're simply going to write all the elements of a channel to a single file, using the UNIX `cat` command.
 
-#### 2.1. Define the collection command and test it in the terminal
+#### Define the collection command and test it in the terminal
 
-The collection step we want to add to our workflow will use the cat command to concatenate multiple uppercased greetings into a single file.
-
+The collection step we want to add to our workflow will use the cat command to concatenate multiple uppercased greetings into a single file. 
 Let's run the command by itself in the terminal to verify that it works as expected, just like we've done previously.
 
-Run the following in your terminal:
-
 ```bash
-echo 'Hello' | tr '[a-z]' '[A-Z]' > UPPER-Hello-output.txt
-echo 'Bonjour' | tr '[a-z]' '[A-Z]' > UPPER-Bonjour-output.txt
-echo 'Hola' | tr '[a-z]' '[A-Z]' > UPPER-Hola-output.txt
-cat UPPER-Hello-output.txt UPPER-Bonjour-output.txt UPPER-Hola-output.txt > COLLECTED-output.txt
+echo 'Hello' | tr '[a-z]' '[A-Z]' > upper_Hello_output.txt
+echo 'Bonjour' | tr '[a-z]' '[A-Z]' > upper_Bonjour_output.txt
+echo 'Hola' | tr '[a-z]' '[A-Z]' > upper_Hola_output.txt
+cat upper_Hello_output.txt upper_Bonjour_output.txt upper_Hola_output.txt > collected_output.txt
 ```
 
-The output is a text file called `COLLECTED-output.txt` that contains the uppercase versions of the original greetings.
-Check the content of that file with `less COLLECTED-output.txt`; that is the result we want to achieve with our workflow.
+The output is a text file called `collected_output.txt` that contains the uppercase versions of the original greetings.
+Check the content of that file with `less collected_output.txt`; that is the result we want to achieve with our workflow.
 
-#### 2.2. Create a new process to do the collection step
+#### Create a new process to do the collection step
 
-Let's create a new process and call it `collect_greetings()`. We can start writing it based on the previous one.
-
-2.2.1. Write the 'obvious' parts of the process
-
-Add the following process definition to the workflow script:
+Let's create a new process and call it `collect_greetings()`. We can start writing it based on the previous one, 
+and add the following process definition to the workflow script:
 
 ```nextflow
 // Collect uppercase greetings into a single output file
@@ -264,42 +228,39 @@ process collect_greetings {
         ???
 
     output:
-        path "COLLECTED-output.txt"
+        path "collected_output.txt"
 
     script:
     """
-    ??? > 'COLLECTED-output.txt'
+    ??? > 'collected_output.txt'
     """
 }
 ```
 
-This is what we can write with confidence based on what you've learned so far. But this is not functional yet.
-We leave out the input definition and the first half of the script command because we need to figure out how to write that.
-
-We need to collect the greetings from all the calls to the `convert_to_upper()` process. The channel output from `convert_to_upper()` will contain the paths to the individual files containing the uppercased greetings. That amounts to one input slot; let's call it input_files for simplicity.
-
-In the process block, make the following code change:
+We need to collect the greetings from all the calls to the `convert_to_upper()` process. The channel output from `convert_to_upper()` will contain the paths to the individual files containing the uppercased greetings. Hence we just need to add:
 
 ```nextflow
     input:
         path input_files
 ```
 
-This is where things could get a little tricky, because we need to be able to handle an arbitrary number of input files. Specifically, we can't write the command up front, so we need to tell Nextflow how to compose it at runtime based on what inputs flow into the process.
+This is where things could get a little tricky, because we need to be able to handle an arbitrary number of input files. 
+We can't write the command up front, so we need to tell Nextflow how to compose it at runtime based on what inputs flow into the process.
 
-If we have an input channel containing the element `[file1.txt, file2.txt, file3.txt]`, we need Nextflow to turn that into `cat file1.txt file2.txt file3.txt`. Fortunately, Nextflow is quite happy to do that for us if we simply write `cat ${input_files}` in the script command.
+If we have an input channel containing the element `[file1.txt, file2.txt, file3.txt]`, we need Nextflow to turn that into `cat file1.txt file2.txt file3.txt`. 
+Fortunately, Nextflow is quite happy to do that if we simply write `cat ${input_files}` in the script command.
 
 In the process block, make the following code change:
 
 ```nextflow
     script:
     """
-    cat ${input_files} > 'COLLECTED-output.txt'
+    cat ${input_files} > 'collected_output.txt'
     """
 ```
 In theory this should handle any arbitrary number of input files.
 
-### 2.3. Add the collection step to the workflow
+#### Add the collection step to the workflow
 
 Now we should just need to call the collection process on the output of the uppercasing step, and connect the process calls.
 In the workflow block, make the following code change:
@@ -338,17 +299,13 @@ And have a look at the contents of the final output file `COLLECTED-outpu.txt` t
 It seems that the collection step was run individually on each greeting, which is NOT what we wanted.
 We need to do something to tell Nextflow explicitly that we want that third step to run on all the elements in the channel output by convert_to_upper().
 
-#### 2.4. Use an operator to collect the greetings into a single input
+#### Use an operator to collect the greetings into a single input
 
-Let's add the `collect()` operator. This time it's going to look a bit different because we're not adding the operator in the context of a channel factory, but to an output channel. We take the `convert_to_upper.out` and append the `collect()` operator, which gives us `convert_to_upper.out.collect()`. We can plug that directly into the `collect_greetings()` process call.
+Let's add the `collect()` operator. Note that this time we're not adding the operator in the context of a channel factory, but to an output channel. 
+We take the `convert_to_upper.out` and append the `collect()` operator, which gives us `convert_to_upper.out.collect()`. 
+We can plug that directly into the `collect_greetings()` process call.
 
-In the workflow block, make the following code change:
-
-```nextflow
-    // collect all the greetings into one file
-    collect_greetings(convert_to_upper.out.collect())
-```
-
+In the workflow block, make the following code change. 
 Let's also include a couple of `view()` statements to visualize the before and after states of the channel contents.
 
 ```nextflow
@@ -360,9 +317,7 @@ Let's also include a couple of `view()` statements to visualize the before and a
     convert_to_upper.out.collect().view { greeting -> "After collect: $greeting" }
 ```
 
-The `view()` statements can go anywhere you want; we put them after the call for readability.
-
-Run the workflow again with -resume 
+The `view()` statements can go anywhere you want; we put them after the call for readability. Run the workflow again with `-resume` 
 
 ```bash
 nextflow run hello-workflow.nf -resume
@@ -389,11 +344,10 @@ This time the third step was only called once. Looking at the output of the `vie
 - Three `Before collect`: statements, one for each greeting: at that point the file paths are individual items in the channel.
 - A single `After collect`: statement: the three file paths are now packaged into a single element.
 
-Have a look at the contents of the final output file too with `less results/COLLECTED-output.txt`
-
+Have a look at the contents of the final output with `less results/collected_output.txt`. 
 This time we have all three greetings in the final output file. Success! Remove the optional view calls to make the next outputs less verbose.
-
-If you run this several times without `-resume`, you will see that the order of the greetings changes from one run to the next. This shows you that the order in which elements flow through process calls is not guaranteed to be consistent.
+If you run this several times without `-resume`, you will see that the order of the greetings changes from one run to the next. 
+This shows you that the order in which elements flow through process calls is not guaranteed to be consistent.
 
 Let's now learn how to pass more than one input to a process.
 
