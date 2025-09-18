@@ -111,14 +111,18 @@ workflow {
 }
 ```
 
+This is exactly how we left our `hello_workflow.nf` file in the next chapter. Run it once to check the execution:
+
 ```bash
 nextflow run hello_modules.nf
 ```
 
+You should find the expected output:
+
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-modules.nf` [festering_nobel] DSL2 - revision: eeca64cdb1
+Launching `hello_modules.nf` [festering_nobel] DSL2 - revision: eeca64cdb1
 
 executor >  local (7)
 [25/648bdd] say_hello (2)       | 3 of 3 ✔
@@ -129,7 +133,7 @@ There were 3 greetings in this batch
 
 As previously, you will find the output files in the `results` directory, as specified by the `publishDir` directive.
 
-### 1. Create a directory to store modules
+### 6.1. Create a directory to store modules
 
 It is best practice to store your modules in a specific directory. You can call that directory anything you want, but the convention is to call it `modules/`.
 
@@ -137,14 +141,14 @@ It is best practice to store your modules in a specific directory. You can call 
 mkdir modules
 ```
 
-Here we are showing how to use local modules, meaning modules stored locally in the same repository as the rest of the workflow code, 
-in contrast to remote modules, which are stored in other (remote) repositories.
+Here we are showing how to use local modules, meaning modules stored locally in the same folder or repository as the rest of the workflow code. 
+In contrast to remote modules, which are stored in other (remote) repositories.
 
-### 2. Create a module for `say_hello()`
+### 6.2. Create a module for `say_hello()`
 
-In its simplest form, turning an existing process into a module is little more than a copy-paste operation. We're going to create a file stub for the module, copy the relevant code over then delete it from the main workflow file. Then all we'll need to do is add an import statement so that Nextflow will know to pull in the relevant code at runtime.
+In its simplest form, turning an existing process into a module is little more than a copy-paste operation. We're going to create a file *stub* for the module, copy the relevant code over then delete it from the main workflow file. Then all we'll need to do is add an import statement so that Nextflow will know to pull in the relevant code at runtime.
 
-#### 2.1 Create a file for the new module
+#### Create a file for the new module
 
 Let's create an empty file for the module called say_hello.nf.
 
@@ -154,7 +158,7 @@ touch modules/say_hello.nf
 
 This gives us a place to put the process code.
 
-#### 2.2. Move the say_hello process code to the module file
+#### Move the say_hello process code to the module file
 
 Copy the whole process definition over from the workflow file to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
 
@@ -180,7 +184,7 @@ process say_hello {
 
 Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
 
-#### 2.3. Add an import declaration before the workflow block
+#### Add an import declaration before the workflow block
 
 The syntax for importing a local module is fairly straightforward:
 
@@ -197,7 +201,7 @@ include { say_hello } from './modules/say_hello.nf'
 workflow {
 ```   
 
-#### 2.4. Run the workflow to verify that it does the same thing as before
+#### Run the workflow to verify that it does the same thing as before
 
 We're running the workflow with essentially the same code and inputs as before, so let's run with the `-resume` flag and see what happens.
 
@@ -219,9 +223,9 @@ There were 3 greetings in this batch
 ```
 Nextflow recognized that it's still all the same work to be done, even if the code is split up into multiple files.
 
-### 3. Modularize the `convert_to_upper()` process
+### 6.3. Modularize the `convert_to_upper()` process
 
-#### 3.1. Create a file stub for the new module
+#### Create a file stub for the new module
 
 Create an empty file for the module called `convert_to_upper.nf`.
 
@@ -229,7 +233,7 @@ Create an empty file for the module called `convert_to_upper.nf`.
 touch modules/convert_to_upper.nf
 ```
 
-#### 3.2. Move the convert_to_upper process code to the module file
+#### Move the convert_to_upper process code to the module file
 
 Copy the whole process definition over from the workflow file to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
 
@@ -255,7 +259,7 @@ process convert_to_upper {
 ```
 Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
 
-#### 3.3. Add an import declaration before the workflow block
+#### Add an import declaration before the workflow block
 
 Insert the import declaration above the workflow block and fill it out appropriately.
 
@@ -267,7 +271,7 @@ include { convert_to_upper } from './modules/convert_to_upper.nf'
 workflow {
 ```
 
-#### 3.4. Run the workflow to verify that it does the same thing as before
+#### Run the workflow to verify that it does the same thing as before
 
 Run this with the `-resume` flag.
 
@@ -289,9 +293,9 @@ There were 3 greetings in this batch
 
 Let's do it one last time fo have the code completely modularized.
 
-### 4. Modularize the `collect_greetings()` process
+### 6.4. Modularize the `collect_greetings()` process
 
-#### 4.1. Create a file stub for the new module
+#### Create a file stub for the new module
 
 Create an empty file for the module called `collect_greetings.nf`.
 
@@ -299,7 +303,7 @@ Create an empty file for the module called `collect_greetings.nf`.
 touch modules/collect_greetings.nf
 ```
 
-#### 4.2. Move the collect_greetings process code to the module file
+#### Move the collect_greetings process code to the module file
 
 Copy the whole process definition over from the workflow file to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
 
@@ -329,7 +333,7 @@ process collect_greetings {
 
 Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
 
-#### 4.3. Add an import declaration before the workflow block
+#### Add an import declaration before the workflow block
 
 Insert the import declaration above the workflow block and fill it out appropriately.
 
@@ -342,7 +346,7 @@ include { collect_greetings } from './modules/collect_greetings.nf'
 workflow {
 ```
 
-#### 4.4. Run the workflow to verify that it does the same thing as before
+#### Run the workflow to verify that it does the same thing as before
 
 Run this with the `-resume` flag.
 
