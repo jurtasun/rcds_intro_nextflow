@@ -395,3 +395,34 @@ You know how to modularize multiple processes in a workflow.
 Congratulations, you've done all this work and absolutely nothing has changed to how the pipeline works!
 
 Now your code is more modular, and if you decide to write another pipeline that calls on one of those processes, you just need to type one short import statement to use the relevant module. This is better than just copy-pasting the code, because if later you decide to improve the module, all your pipelines will inherit the improvements.
+
+### 6.1 Manage software environments
+
+A **container** is a lightweight, portable unit that packages an application together with everything it needs to run: code, runtime, libraries, and dependencies. 
+Unlike virtual machines, containers *share the host operating system kernel*, which makes them faster and more efficient. 
+The most widely used container platform is `Docker`, which lets you create, run, and manage containers.
+
+Keep in mind that containers are similar to *environments* and v*irtual machines*, but not the same. 
+When we run software, we often need to isolate dependencies so that projects don't interfere with each other. There are three common approaches:
+
+#### Environments (`conda`, `venv`, `pipenv`)
+
+- Isolate only *language-specific dependencies* (like `Python` packages). 
+- They are lightweight, but rely on the host system's OS and libraries.
+- (...)
+
+#### Virtual Machines (`VirtualBox`, `VMware`, `Hyper-V`)
+
+- Emulate *a full computer*, including its own kernel. 
+- Heavier: need dedicated CPU, memory, disk space. 
+- Used when you need to run an entirely different operating system.
+- (...)
+
+#### Containers (`Docker`, `Singularity`, `Podman`, `LXC`)
+
+- Package *the entire software stack*: the application with its code, runtime, libraries, and tools.
+- Share the host kernel (lighter than VMs).
+- Consistent across environments runs the same on any machine with Docker.
+- (...)
+
+As a final note, you may have heared about `Kubernetes`. These are a high-level tool built from the idea of the containers, which orchestrate many containers across multiple machine, scheduling containers, handles network and storage, etc. Here we will focus on the idea of containers and how to use them for sustainable, reproducible software.
