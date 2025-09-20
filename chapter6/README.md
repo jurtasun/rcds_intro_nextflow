@@ -9,7 +9,7 @@ LMS email address `Jesus.Urtasun@lms.mrc.ac.uk`
 <img src="/readme_figures/imperial_ecri.png" width = 700>
 <img src="/readme_figures/nextflow-logo.png" width = 700>
 
-### Chapter 6. Containers and modularization.
+### Chapter 6. Modularization.
 
 This chapter covers how to organize your code in an efficient and sustainable way. Specifically, we are going to demonstrate how to use **modules**. In `Nextflow`, a **module** is a single process definition that is encapsulated in a single file. To use a module in a workflow, you just add a single-line import statement; then you can integrate the process into the workflow the same way you normally would.
 
