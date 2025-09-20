@@ -56,16 +56,16 @@ as all topics will be properly introduce as the course progresses.
 - Add a batch command-line parameter.
 - Add an output to the collector step.
 
-### Chapter 6. Containers and modularization.
+### Chapter 6. Modularization.
 
+- The idea of modules, sustainability and reproducibilty.
 - Modularize a `Nextflow` pipeline.
-- The idea of containers: Docker and Singularity.
-- Containers 'manually', containers in `Nextflow`.
+- A bridge towards containers (Docker and Singularity).
 
-### Chapter 7. `Nextflow` config and `nf-core`.
+### Chapter 7. Containers and `Nextflow` config.
 
-- The `hello-config` directory.
-- Symbolic links, containers, submission script through `Nextflow` config.
+- The idea of containers, Docker & Singularity, containers within `Nextflow`.
+- The `hello-config` directory, Symbolic links, submission through `Nextflow` config.
 - Load pipelines from `nf-core`, run on HPC and parallelization.
 
 ### Setup
