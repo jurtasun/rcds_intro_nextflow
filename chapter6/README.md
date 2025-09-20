@@ -15,7 +15,7 @@ This chapter covers how to organize your code in an efficient and sustainable wa
 
 When we started developing our workflow, we put everything in one single code file. Splitting processes into individual modules makes it possible to reuse process definitions in multiple workflows without producing multiple copies of the code. This makes the code more shareable, flexible and maintainable.
 
-We're going to use as starting point the example we did in previous chapter. Create a script named `hello_workflow.nf`, 
+We're going to use as starting point the example we did in previous chapter. Create a script named `hello_modules.nf`, 
 
 ```bash
 touch hello_modules.nf && code hello_modules.nf
@@ -84,6 +84,7 @@ process collect_greetings {
     """
     cat ${input_files} > 'collected_${batch_name}_output.txt'
     """
+
 }
 
 // Workflow
@@ -108,6 +109,7 @@ workflow {
 
     // emit a message about the size of the batch
     collect_greetings.out.count.view { num_greetings -> "There were $num_greetings greetings in this batch" }
+
 }
 ```
 
@@ -156,57 +158,63 @@ Let's create an empty file for the module called say_hello.nf.
 touch modules/say_hello.nf
 ```
 
-This gives us a place to put the process code.
+This gives us a place to store the code for the `say_hello` process.
 
-#### Move the say_hello process code to the module file
+#### Move the `say_hello` process code to the module file
 
-Copy the whole process definition over from the workflow file to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
+Copy the whole process definition over from the workflow to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
 
 ```nextflow
 #!/usr/bin/env nextflow
-// Use echo to print 'Hello World!' to a file
-process say_hello {
 
+// Process printing 'Hello World!' to a file
+process say_hello {
+        
     publishDir 'results', mode: 'copy'
 
     input:
         val greeting
 
     output:
-        path "${greeting}-output.txt"
+        path "output_${greeting}.txt"
 
     script:
     """
-    echo '$greeting' > '$greeting-output.txt'
+    echo '$greeting' > 'output_${greeting}.txt'
     """
+
 }
 ```
 
-Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
+And delete the process definition from the workflow file.
 
 #### Add an import declaration before the workflow block
 
-The syntax for importing a local module is fairly straightforward:
+The syntax for importing a local module is straightforward:
 
 ```nextflow
 include { <MODULE_NAME> } from '<path_to_module>'
 ```
 
-Let's insert that above the workflow block and fill it out appropriately.
+In our case, that will be just:
 
 ```nextflow
 // Include modules
+
+// Process printing 'Hello World!' to a file
 include { say_hello } from './modules/say_hello.nf'
+
+// (...)
 
 workflow {
 ```   
 
-#### Run the workflow to verify that it does the same thing as before
+#### Run the workflow to verify execution remains the same
 
 We're running the workflow with essentially the same code and inputs as before, so let's run with the `-resume` flag and see what happens.
 
 ```bash
-nextflow run hello-modules.nf -resume
+nextflow run hello_modules.nf -resume
 ```
 
 This runs quickly very quickly because everything is cached.
@@ -214,7 +222,7 @@ This runs quickly very quickly because everything is cached.
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-modules.nf` [romantic_poisson] DSL2 - revision: 96edfa9ad3
+Launching `hello_modules.nf` [romantic_poisson] DSL2 - revision: 96edfa9ad3
 
 [f6/cc0107] say_hello (1)       | 3 of 3, cached: 3 ✔
 [3c/4058ba] convert_to_upper (2) | 3 of 3, cached: 3 ✔
@@ -233,14 +241,14 @@ Create an empty file for the module called `convert_to_upper.nf`.
 touch modules/convert_to_upper.nf
 ```
 
-#### Move the convert_to_upper process code to the module file
+#### Move the `convert_to_upper` process code to the module file
 
 Copy the whole process definition over from the workflow file to the module file, making sure to copy over the `#!/usr/bin/env` nextflow shebang too.
 
 ```nextflow
 #!/usr/bin/env nextflow
 
-// Use a text replacement tool to convert the greeting to uppercase
+// Process converting content of file to upper case
 process convert_to_upper {
 
     publishDir 'results', mode: 'copy'
@@ -249,12 +257,13 @@ process convert_to_upper {
         path input_file
 
     output:
-        path "UPPER-${input_file}"
+        path "upper_${input_file}"
 
     script:
     """
-    cat '$input_file' | tr '[a-z]' '[A-Z]' > 'UPPER-${input_file}'
+    cat '$input_file' | tr '[a-z]' '[A-Z]' > 'upper_${input_file}'
     """
+
 }
 ```
 Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
@@ -265,25 +274,31 @@ Insert the import declaration above the workflow block and fill it out appropria
 
 ```nextflow
 // Include modules
+
+// Process printing 'Hello World!' to a file
 include { say_hello } from './modules/say_hello.nf'
+
+// Process converting content of file to upper case
 include { convert_to_upper } from './modules/convert_to_upper.nf'
+
+// (...)
 
 workflow {
 ```
 
-#### Run the workflow to verify that it does the same thing as before
+#### Run the workflow to verify execution remains the same
 
 Run this with the `-resume` flag.
 
 ```bash
-nextflow run hello-modules.nf -resume
+nextflow run hello_modules.nf -resume
 ```
 This should still produce the same output as previously.
 
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-modules.nf` [nauseous_heisenberg] DSL2 - revision: a04a9f2da0
+Launching `hello_modules.nf` [nauseous_heisenberg] DSL2 - revision: a04a9f2da0
 
 [c9/763d42] say_hello (3)       | 3 of 3, cached: 3 ✔
 [60/bc6831] convert_to_upper (3) | 3 of 3, cached: 3 ✔
@@ -320,18 +335,19 @@ process collect_greetings {
         val batch_name
 
     output:
-        path "COLLECTED-${batch_name}-output.txt" , emit: outfile
+        path "collected_${batch_name}_output.txt", emit: outfile
         val count_greetings , emit: count
 
     script:
         count_greetings = input_files.size()
     """
-    cat ${input_files} > 'COLLECTED-${batch_name}-output.txt'
+    cat ${input_files} > 'collected_${batch_name}_output.txt'
     """
+
 }
 ```
 
-Once that is done, delete the process definition from the workflow file, but make sure to leave the shebang in place.
+And delete the process definition from the workflow file, but make sure to leave the shebang in place.
 
 #### Add an import declaration before the workflow block
 
@@ -339,8 +355,14 @@ Insert the import declaration above the workflow block and fill it out appropria
 
 ```nextflow
 // Include modules
+
+// Process printing 'Hello World!' to a file
 include { say_hello } from './modules/say_hello.nf'
+
+// Process converting content of file to upper case
 include { convert_to_upper } from './modules/convert_to_upper.nf'
+
+// Collect uppercase greetings into a single output file
 include { collect_greetings } from './modules/collect_greetings.nf'
 
 workflow {
@@ -351,7 +373,7 @@ workflow {
 Run this with the `-resume` flag.
 
 ```bash
-nextflow run hello-modules.nf -resume
+nextflow run hello_modules.nf -resume
 ```
 
 This should still produce the same output as previously.
@@ -360,7 +382,7 @@ This should still produce the same output as previously.
 ```bash
  N E X T F L O W   ~  version 24.10.0
 
-Launching `hello-modules.nf` [friendly_coulomb] DSL2 - revision: 7aa2b9bc0f
+Launching `hello_modules.nf` [friendly_coulomb] DSL2 - revision: 7aa2b9bc0f
 
 [f6/cc0107] say_hello (1)       | 3 of 3, cached: 3 ✔
 [3c/4058ba] convert_to_upper (2) | 3 of 3, cached: 3 ✔

@@ -4,41 +4,13 @@
 params.greeting = 'exercises/data/greetings_1.csv'
 params.batch = 'test_batch'
 
+// Include modules
+
 // Process printing 'Hello World!' to a file
-process say_hello {
-        
-    publishDir 'results', mode: 'copy'
-
-    input:
-        val greeting
-
-    output:
-        path "output_${greeting}.txt"
-
-    script:
-    """
-    echo '$greeting' > 'output_${greeting}.txt'
-    """
-
-}
+include { say_hello } from './modules/say_hello.nf'
 
 // Process converting content of file to upper case
-process convert_to_upper {
-
-    publishDir 'results', mode: 'copy'
-
-    input:
-        path input_file
-
-    output:
-        path "upper_${input_file}"
-
-    script:
-    """
-    cat '$input_file' | tr '[a-z]' '[A-Z]' > 'upper_${input_file}'
-    """
-
-}
+include { convert_to_upper } from './modules/convert_to_upper.nf'
 
 // Collect uppercase greetings into a single output file
 process collect_greetings {
@@ -82,4 +54,5 @@ workflow {
 
     // emit a message about the size of the batch
     collect_greetings.out.count.view { num_greetings -> "There were $num_greetings greetings in this batch" }
+    
 }

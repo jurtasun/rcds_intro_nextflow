@@ -82,4 +82,5 @@ workflow {
 
     // emit a message about the size of the batch
     collect_greetings.out.count.view { num_greetings -> "There were $num_greetings greetings in this batch" }
+    
 }
