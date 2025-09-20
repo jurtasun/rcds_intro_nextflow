@@ -70,7 +70,7 @@ as all topics will be properly introduce as the course progresses.
 
 ### Setup
 
-We will be working with the terminal of Linux OS, Visual Studio Code as main editor, and `Groovy` / `Nextflow` languages.
+We will be working with the terminal of `Linux OS`, `Visual Studio Code` as main editor, and `Groovy` / `Nextflow` languages.
 They do not need to be installed in your local computer, since we will use the `Codespaces` provided by Github, 
 which already implement an interface ready to program an execute the code. If you want to follow the course in your local machine,
 please follow the steps below to install `Groovy`, `Java Development Kit` (JDK), and `Nextflow`.
@@ -83,7 +83,7 @@ please follow the steps below to install `Groovy`, `Java Development Kit` (JDK),
 
 3. Open a `Codespace` where we will be using either Visual Studio Code fro the practical sessions.
 
-### Install and run `Nextflow` locally in your machine
+### Install `Nextflow` locally in your machine
 
 1. Install `homebrew`
 
